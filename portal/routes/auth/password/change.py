@@ -9,14 +9,13 @@ from werkzeug.exceptions import NotFound, BadRequest, Unauthorized, Unprocessabl
 from ....helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise
 from ....encryption import Encryption
 from ....models import db
-from ....models.Users import User
-from ....models.security_question import SecurityQuestion
+from ....models.users import User
 from .. import ns
 from .... import APP, LOG
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str, location='headers', required=True)
-# parser.add_argument('Ipaddress', type=str, location='headers', required=True)
+
 parser.add_argument('username', type=str, location='headers', required=True)
 parser.add_argument('user', type=str, location='json', required=True)
 parser.add_argument('oldPassword', type=str, location='json', required=True)

@@ -5,7 +5,7 @@ from flask import request
 from flask_restx import Resource, reqparse, fields
 from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, InternalServerError
 from ...encryption import Encryption
-from ...models.Users import User
+from ...models.users import User
 from ...models.jwttokenblacklist import JWTTokenBlacklist
 from ...models import status, roles
 from ...api import api
@@ -13,7 +13,6 @@ from . import ns
 from ... import APP, LOG
 
 parser = reqparse.RequestParser()
-# parser.add_argument('Ipaddress', type=str, location='json', required=False)
 parser.add_argument('Email', type=str, location='json', required=True)
 parser.add_argument('password', type=str, location='json', required=True)
 
@@ -21,6 +20,7 @@ response_model = ns.model('GetLogin', {
     'username':fields.String,
     'Email': fields.String,
     'UserId': fields.String,
+    "role": fields.String,
     'token': fields.String,
 })
 
@@ -50,14 +50,12 @@ class Login(Resource):
                 raise UnprocessableEntity('User is not active')
             
             role = userinfo.Role
-            # print(userinfo,"******************")
             exp = datetime.utcnow() + timedelta(hours=1, minutes=30)
 
             payload = {
                 'username': userinfo.UserName,
                 'exp': exp,
                 'role': role,
-                # 'Ipaddress': ip,
             }
             # print("payload - JWT Token",payload)
             token = jwt.encode(key=APP.config['JWT_SECRET'], algorithm='HS256', payload=payload )

@@ -1,7 +1,7 @@
 from flask_restx import Resource, reqparse, fields
 from ...helpers import token_verify_or_raise
 from ...models import db
-from ...models.Users import User
+from ...models.users import User
 from werkzeug.exceptions import UnprocessableEntity, InternalServerError
 from . import ns
 from ... import LOG
@@ -13,6 +13,8 @@ parser.add_argument('UserId', type=str, location='headers', required=True)
 parser.add_argument('email', type=str, location='json', required=True)
 parser.add_argument('Manager', type=str, location='json', required=True)
 parser.add_argument('ManagerEmail', type=str, location='json', required=True)
+parser.add_argument('SecondaryManager', type=str, location='json', required=True)
+parser.add_argument('SecondaryManagerEmail', type=str, location='json', required=True)
 parser.add_argument('role', type=str, location='json', required=True)
 parser.add_argument('status', type=str, location='json', required=True)
 
@@ -40,6 +42,7 @@ class UpdateUser(Resource):
             user.Manager = args["Manager"]
             user.ManagerEmail = args["ManagerEmail"]
             user.SecondaryManager = args['SecondaryManager']
+            user.SecondaryManagerEmail = args['SecondaryManagerEmail']
             user.Role = args["role"]
             user.Status = args["status"]
             db.session.commit()

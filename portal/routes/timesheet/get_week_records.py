@@ -6,8 +6,8 @@ from flask import request
 from flask_restx import Resource, reqparse, fields, inputs
 from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, InternalServerError
 from ...encryption import Encryption
-from ...models.Users import User
-from ...models.Timesheet_Entry import TimesheetEntry
+from ...models.users import User
+from ...models.timesheet_Entry import TimesheetEntry
 # from ...models.jwttokenblacklist import JWTTokenBlacklist
 from ...models import status, roles
 from ...api import api
@@ -15,15 +15,19 @@ from . import ns
 from ... import APP, LOG
 
 parser = reqparse.RequestParser()
-# parser.add_argument('Ipaddress', type=str, location='json', required=False)
 parser.add_argument('UserId', type=str, location='headers', required=True)
 
-@ns.route('/Get_history')
-class GetHistory(Resource):
-    @ns.doc(description='Get_history',
+response_model = ns.model('Get_week_records', {
+post_response_model = ns.model('Get_week_records', {
+    'result': fields.String,    
+})
+
+@ns.route('/Get_week_records')
+class Get_week_records(Resource):
+    @ns.doc(description='Get_week_records',
             responses={200: 'OK', 400: 'Bad Request', 401: 'Unauthorized', 500: 'Internal Server Error'})
     @ns.expect(parser, validate=True)
-    # @ns.marshal_with(response_model)
+    @ns.marshal_with(response_model)
     def post(self):
         records = []
         args = parser.parse_args(strict=True)

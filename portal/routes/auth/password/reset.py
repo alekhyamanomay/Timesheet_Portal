@@ -7,8 +7,7 @@ from werkzeug.exceptions import NotFound, BadRequest, Unauthorized, Unprocessabl
 from ....helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise, RESPONSE_OK
 from ....encryption import Encryption
 from ....models import db
-from ....models.Users import User
-from ....models.security_question import SecurityQuestion
+from ....models.users import User
 from ....services.mail import send_email
 from .. import ns
 from .... import APP, LOG
@@ -58,7 +57,7 @@ class PasswordReset(Resource):
         change_pass = False
 
         username = args["username"]
-        # token = token_verify_or_raise(token=args["Authorization"], ip=args["Ipaddress"], user=args["username"])
+        token = token_verify_or_raise(token=args["Authorization"], user=args["username"])
 
         user = User.query.filter_by(UserId=args[UserId]).first()
         if user is None:

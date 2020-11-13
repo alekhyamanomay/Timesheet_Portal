@@ -5,7 +5,7 @@ from ... import APP, LOG
 from ...encryption import Encryption
 from ...helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise
 from ...models import db,status
-from ...models.Users import User
+from ...models.users import User
 from . import ns
 
 # from ...services.mail import send_email
@@ -14,7 +14,6 @@ parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
 parser.add_argument('username', type=str, location='headers', required=True)
-parser.add_argument('Ipaddress', type=str, location='headers', required=True)
 
 parser.add_argument('name', type=str, location='json', required=True)
 parser.add_argument('UserId', type=str, location='json', required=True)

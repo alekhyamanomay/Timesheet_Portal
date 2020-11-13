@@ -1,7 +1,7 @@
 from flask_restx import Resource, reqparse, fields
 from ...helpers import token_verify_or_raise
 from ...models import db
-from ...models.Users import User
+from ...models.users import User
 from werkzeug.exceptions import UnprocessableEntity, InternalServerError
 from . import ns
 from ... import LOG
@@ -10,14 +10,15 @@ parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
 parser.add_argument('username', type=str, location='headers', required=True)
-# parser.add_argument('Ipaddress', type=str, location='headers', required=True)
 
 response_model_child = ns.model('GetGetEmployerMemberRelationChild', {
     "UserNo": fields.String,
     "UserName": fields.String,
     "Email": fields.String,
-    "PhoneNumber": fields.String,
-    "DisplayName": fields.String,
+    "Manager": fields.String,
+    "ManagerEmail": fields.String,
+    "SecondaryManager": fields.String,
+    "SecondaryManagerEmail": fields.String,
     "Role": fields.String,
     "Status": fields.String
 })
@@ -32,7 +33,7 @@ class GetUsers(Resource):
     @ns.doc(description='Get profile details',
             responses={200: 'OK', 400: 'Bad Request', 401: 'Unauthorized', 500: 'Internal Server Error'})
     @ns.expect(parser, validate=True)
-    # @ns.marshal_with(response_model)
+    @ns.marshal_with(response_model)
     def get(self):
         args = parser.parse_args(strict=False)
         username = args['username']
@@ -48,8 +49,10 @@ class GetUsers(Resource):
                 "UserNo": user.UserID,
                 "UserName": user.Username,
                 "Email": user.Email,
-                "DisplayName": user.Manger,
-                "PhoneNumber": user.ManagerEmail,
+                "Manger": user.Manger,
+                "ManagerEmail": user.ManagerEmail,
+                "SecondaryManager": user.SecondaryManager,
+                "SecondaryManagerEmail": user.SecondaryManagerEmail,
                 "Role": user.Role,
                 "Status": user.Status,
             }

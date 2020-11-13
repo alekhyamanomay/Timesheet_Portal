@@ -5,8 +5,8 @@ from flask import request
 from flask_restx import Resource, reqparse, fields, inputs
 from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, InternalServerError
 from ...encryption import Encryption
-from ...models.Users import User
-from ...models.Timesheet_Entry import TimesheetEntry
+from ...models.users import User
+from ...models.timesheet_Entry import TimesheetEntry
 # from ...models.jwttokenblacklist import JWTTokenBlacklist
 from ...models import status, roles
 from ...api import api
@@ -18,22 +18,18 @@ parser = reqparse.RequestParser()
 parser.add_argument('EntryId', type=str, location='headers', required=True)
 parser.add_argument('Email', type=str, location='headers', required=True)
 
-# response_model = ns.model('Create_entry', {
-#     'username': fields.String,
-#     'displayName': fields.String,
-#     'email': fields.String,
-#     'role': fields.String,
-#     'temppass': fields.Boolean(default=False),
-#     'token': fields.String,
-# })
+response_model = ns.model('Delete_entry', {
+post_response_model = ns.model('PostProfileDetails', {
+    'result': fields.String,    
+})
 
 
-@ns.route('/Create_entry')
-class Login(Resource):
-    @ns.doc(description='Create_entry',
+@ns.route('/Delete_entry')
+class Delete_entry(Resource):
+    @ns.doc(description='Delete_entry',
             responses={200: 'OK', 400: 'Bad Request', 401: 'Unauthorized', 500: 'Internal Server Error'})
     @ns.expect(parser, validate=True)
-    # @ns.marshal_with(response_model)
+    @ns.marshal_with(response_model)
     def post(self):
         args = parser.parse_args(strict=True)
         
