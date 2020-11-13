@@ -1,0 +1,11 @@
+--for development mode--
+
+_____________run api______________________
+run
+
+# flask run
+
+_____________run jobs_____________________
+
+# celery worker --app=tasks.worker.app --pool=eventlet --loglevel=info --pid=
+# celery beat --app=tasks.worker.app --loglevel=info --pid=
