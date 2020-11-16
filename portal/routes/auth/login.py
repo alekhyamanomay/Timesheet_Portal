@@ -13,13 +13,13 @@ from . import ns
 from ... import APP, LOG
 
 parser = reqparse.RequestParser()
-parser.add_argument('Email', type=str, location='json', required=True)
+parser.add_argument('email', type=str, location='json', required=True)
 parser.add_argument('password', type=str, location='json', required=True)
 
 response_model = ns.model('GetLogin', {
     'username':fields.String,
-    'Email': fields.String,
-    'UserId': fields.String,
+    'email': fields.String,
+    'userid': fields.String,
     "role": fields.String,
     'token': fields.String,
 })
@@ -33,7 +33,7 @@ class Login(Resource):
     @ns.marshal_with(response_model)
     def post(self):
         args = parser.parse_args(strict=True)
-        Email = args['Email']
+        Email = args['email']
         password = args['password']
         # ip = args['Ipaddress']
 
@@ -54,18 +54,21 @@ class Login(Resource):
 
             payload = {
                 'username': userinfo.UserName,
+                'email': userinfo.Email,
+                'userid':userinfo.UserId,
                 'exp': exp,
                 'role': role,
             }
             # print("payload - JWT Token",payload)
             token = jwt.encode(key=APP.config['JWT_SECRET'], algorithm='HS256', payload=payload )
-            token = token.decode('utf-8')
 
+            token = token.decode('utf-8')
+            print(token)
             LOG.debug('User %s authenticated successfully', userinfo.UserName)
             return {
                 "username": userinfo.UserName,
-                "UserId":userinfo.UserId,
-                "Email": userinfo.Email,
+                "userid":userinfo.UserId,
+                "email": userinfo.Email,
                 "role": role,
                 'token': str(token)
             }

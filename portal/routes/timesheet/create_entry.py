@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from flask import request
 from flask_restx import Resource, reqparse, fields, inputs
 from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, InternalServerError
+from ...helpers import token_verify_or_raise
 from ...encryption import Encryption
 from ...models.users import User
 from ...models.timesheet_Entry import TimesheetEntry
@@ -14,13 +15,12 @@ from . import ns
 from ... import APP, LOG
 
 parser = reqparse.RequestParser()
-
-parser.add_argument('Name', type=str, location='headers', required=True)
-parser.add_argument('Email', type=str, location='headers', required=True)
-parser.add_argument('Date', type=inputs.date_from_iso8601, location='headers', required=False)
-parser.add_argument('Customer', type=str, location='json', required=True)
-parser.add_argument('Project', type=str, location='json', required=True)
-parser.add_argument('Task', type=str, location='json', required=True)
+parser.add_argument('Authorization', type=str,
+                    location='headers', required=True)
+parser.add_argument('date', type=inputs.date_from_iso8601, location='headers', required=False)
+parser.add_argument('customer', type=str, location='json', required=True)
+parser.add_argument('project', type=str, location='json', required=True)
+parser.add_argument('task', type=str, location='json', required=True)
 parser.add_argument('subtask', type=str, location='json', required=True)
 parser.add_argument('timespent', type=int, location='json', required=True)
 parser.add_argument('description', type=str, location='json', required=True)
@@ -37,6 +37,9 @@ class Create_entry(Resource):
     @ns.expect(parser, validate=True)
     @ns.marshal_with(response_model)
     def post(self):
+        token_verify_or_raise(args['Authorization'], args['username'])
+        y = jwt.decode(args['Authorization'], 'secret', algorithms=['HS256'])
+        print(y)
         args = parser.parse_args(strict=True)
         Name = args['Name']
         Email = args['Email']

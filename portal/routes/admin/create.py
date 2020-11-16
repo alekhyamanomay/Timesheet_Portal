@@ -8,14 +8,14 @@ from ...helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise, 
 from ...models import db,status
 from ...models.users import User
 from . import ns
+import jwt
 
 # from ...services.mail import send_email
 
 parser = reqparse.RequestParser()
-parser.add_argument('Authorization', type=str,
-                    location='headers', required=True)
-parser.add_argument('UserId', type=str, location='headers', required=True)
-parser.add_argument('Ipaddress', type=str, location='headers', required=True)
+# parser.add_argument('Authorization', type=str,
+#                     location='headers', required=True)
+parser.add_argument('UserId', type=str, location='json', required=True)
 parser.add_argument('newuser', type=str, location='json', required=True)
 parser.add_argument('NewUserId', type=str, location='json', required=True)
 parser.add_argument('Email', type=str, location='json', required=True)
@@ -38,8 +38,9 @@ class CreateUser(Resource):
     @ns.expect(parser, validate=False)
     @ns.marshal_with(response_model)
     def post(self):
+        
         args = parser.parse_args(strict=False)
-        token_verify_or_raise(args['Authorization'], args['username'])
+        # token_verify_or_raise(args['Authorization'], args['username'])
         
         user = User.query.filter_by(Email=args["Email"]).first()
         if user is not None:
