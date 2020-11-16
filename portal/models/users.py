@@ -8,14 +8,16 @@ class User(db.Model):
     Password = db.Column(db.String(150), nullable=False)
     UserName = db.Column(db.String(50), unique=True, nullable=False)	
     Email	= db.Column(db.String(50), unique=True, nullable=False)
-    Permission	= db.Column(db.String(20), unique=True, nullable=False)
-    Manager	 = db.Column(db.String(50), unique=True, nullable=False)
-    ManagerEmail  = db.Column(db.String(50), unique=True, nullable=False)
-    SecondaryManager = db.Column(db.String(50), unique=True, nullable=False)
-    SecondaryManagerEmail = db.Column(db.String(50), unique=True, nullable=False)
-    timesheet_entry = db.relationship('TimesheetEntry', backref='User', lazy=True)
+    Permission	= db.Column(db.String(20), unique=False, nullable=False)
+    Manager	 = db.Column(db.String(50), unique=False, nullable=True)
+    ManagerEmail  = db.Column(db.String(50), unique=False, nullable=True)
+    SecondaryManager = db.Column(db.String(50), unique=False, nullable=True)
+    SecondaryManagerEmail = db.Column(db.String(50), unique=False, nullable=True)
     Role = db.Column(db.String(150), nullable=False)
     Status = db.Column(db.String(150), nullable=False)
+    
+    timesheet_entry = db.relationship('TimesheetEntry', backref='User', lazy=True)
+  
   
     def __repr__(self):
         return f"User('{self.UserName}')"

@@ -7,8 +7,8 @@ def init_app(app):
 
     with app.app_context():
         try :
-            # from .Users import User
-            # from .timesheet_entry import TimesheetEntry
+            from .users import User
+            from .timesheetentry import TimesheetEntry
             from .jwttokenblacklist import JWTTokenBlacklist
         except Exception as e:
             print(e)
