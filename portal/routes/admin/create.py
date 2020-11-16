@@ -13,17 +13,17 @@ import jwt
 # from ...services.mail import send_email
 
 parser = reqparse.RequestParser()
-# parser.add_argument('Authorization', type=str,
-#                     location='headers', required=True)
-parser.add_argument('UserId', type=str, location='json', required=True)
+parser.add_argument('Authorization', type=str,
+                    location='headers', required=True)
 parser.add_argument('newuser', type=str, location='json', required=True)
-parser.add_argument('NewUserId', type=str, location='json', required=True)
-parser.add_argument('Email', type=str, location='json', required=True)
-parser.add_argument('Permission', type=str, location='json', required=True)
-parser.add_argument('Manager', type=str, location='json', required=True)
-parser.add_argument('ManagerEmail', type=str, location='json', required=True)
-parser.add_argument('SecondaryManager', type=str, location='json', required=True)
-parser.add_argument('Role', type=str, location='json', required=True)
+parser.add_argument('newuserid', type=str, location='json', required=True)
+parser.add_argument('email', type=str, location='json', required=True)
+parser.add_argument('permission', type=str, location='json', required=True)
+parser.add_argument('manager', type=str, location='json', required=True)
+parser.add_argument('manageremail', type=str, location='json', required=True)
+parser.add_argument('secondarymanager', type=str, location='json', required=True)
+parser.add_argument('secondarymanageremail', type=str, location='json', required=True)
+parser.add_argument('role', type=str, location='json', required=True)
 
 response_model = ns.model('PostUserCreate', {
     'result': fields.String,
@@ -45,19 +45,19 @@ class CreateUser(Resource):
         user = User.query.filter_by(Email=args["Email"]).first()
         if user is not None:
             return {"result": "failure", "error": "user exists with this email"}, 400
-        Password = args['UserId']
+        Password = args['userid']
         enc_pass = Encryption().encrypt(Password)
         usermodel = User(UserName=args['newuser'],
-                          UserId = args['NewUserId'],
+                          UserId = args['newuserid'],
                           Password=enc_pass,
-                          Email=args['Email'],
+                          Email=args['email'],
                           Status= status.STATUS_ACTIVE,
-                          Role=args['Role'],
-                          Permission = args['Permission'],
-                          Manager = args['Manager'],
-                          SecondaryManager = args['SecondaryManager'],
-                          SecondaryManagerEmail = args['SecondaryManagerEmail'],
-                          ManagerEmail = args['ManagerEmail']
+                          Role=args['role'],
+                          Permission = args['permission'],
+                          Manager = args['manager'],
+                          SecondaryManager = args['secondarymanager'],
+                          SecondaryManagerEmail = args['secondarymanageremail'],
+                          ManagerEmail = args['manageremail']
                           )
         
         # Notify the user the creation of his Account with Temporary Password
@@ -69,7 +69,7 @@ class CreateUser(Resource):
                     <p>Please Click on this <a href={APP.config["FRONTEND_URL"]}>link</a> or  copy paste this {APP.config["FRONTEND_URL"]}</p>
                 '''
         cc = []
-        toaddress= [args['Email']]
+        toaddress= [args['email']]
         if len(toaddress):
             _SendEmail(body=body,subject=subject,cc=cc,to_address=toaddress)
         else:
