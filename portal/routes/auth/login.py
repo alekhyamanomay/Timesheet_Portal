@@ -18,8 +18,8 @@ parser.add_argument('password', type=str, location='json', required=True)
 
 response_model = ns.model('GetLogin', {
     'username':fields.String,
-    'Email': fields.String,
-    'UserId': fields.String,
+    'email': fields.String,
+    'userId': fields.String,
     "role": fields.String,
     'token': fields.String,
 })
@@ -64,8 +64,8 @@ class Login(Resource):
             LOG.debug('User %s authenticated successfully', userinfo.UserName)
             return {
                 "username": userinfo.UserName,
-                "UserId":userinfo.UserId,
-                "Email": userinfo.Email,
+                "userId":userinfo.UserId,
+                "email": userinfo.Email,
                 "role": role,
                 'token': str(token)
             }
