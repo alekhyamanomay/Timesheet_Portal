@@ -17,7 +17,7 @@ from ... import APP, LOG
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
-parser.add_argument('date', type=inputs.date_from_iso8601, location='headers', required=False)
+parser.add_argument('date', type=inputs.date_from_iso8601, location='json', required=False)
 parser.add_argument('customer', type=str, location='json', required=True)
 parser.add_argument('project', type=str, location='json', required=True)
 parser.add_argument('task', type=str, location='json', required=True)
@@ -37,19 +37,20 @@ class Create_entry(Resource):
     @ns.expect(parser, validate=True)
     @ns.marshal_with(response_model)
     def post(self):
-        token_verify_or_raise(args['Authorization'], args['username'])
-        y = jwt.decode(args['Authorization'], 'secret', algorithms=['HS256'])
-        print(y)
+        
         args = parser.parse_args(strict=True)
-        Name = args['Name']
-        Email = args['Email']
-        Date = args['Date']
-        Customer = args['Customer']
-        Project = args['Project']
-        Task = args['Task']
+
+        Date = args['date']
+        Customer = args['customer']
+        Project = args['project']
+        Task = args['task']
         Subtask = args['subtask']
         timespent = args['timespent']
         description = args['description']
+
+        y = jwt.decode(args['Authorization'], 'secret', algorithms=['HS256'])
+        print(y)
+        token_verify_or_raise(args['Authorization'], args['username'])
         
         try:
             userinfo = User.query.filter_by(Email= Email).first()
