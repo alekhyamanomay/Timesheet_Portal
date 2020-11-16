@@ -6,7 +6,7 @@ from flask_restx import Resource, reqparse, fields
 from ...helpers import randomStringwithDigitsAndSymbols, token_verify, token_verify_or_raise
 from ...encryption import Encryption
 from ...models import db, status, roles
-from ...models.Users import User
+from ...models.users import User
 from werkzeug.exceptions import Unauthorized, BadRequest, UnprocessableEntity, InternalServerError
 from . import ns
 from ... import APP, LOG

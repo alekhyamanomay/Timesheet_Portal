@@ -19,7 +19,6 @@ parser.add_argument('EntryId', type=str, location='headers', required=True)
 parser.add_argument('Email', type=str, location='headers', required=True)
 
 response_model = ns.model('Delete_entry', {
-post_response_model = ns.model('PostProfileDetails', {
     'result': fields.String,    
 })
 

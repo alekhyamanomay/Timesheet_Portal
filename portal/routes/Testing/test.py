@@ -2,7 +2,7 @@ from . import ns
 from flask import request
 from flask_restx import Resource,reqparse,fields
 from ...models import db
-from ...models.Users import User
+from ...models.users import User
 from ... import APP, LOG
 
 # response_model = ns.model('Client_details', {

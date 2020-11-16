@@ -1,5 +1,5 @@
 from flask import current_app as app
-from .Users import User
+from .users import User
 from . import db
 
 class TimesheetEntry(db.Model):

@@ -18,7 +18,6 @@ parser = reqparse.RequestParser()
 parser.add_argument('UserId', type=str, location='headers', required=True)
 
 response_model = ns.model('Get_week_records', {
-post_response_model = ns.model('Get_week_records', {
     'result': fields.String,    
 })
 

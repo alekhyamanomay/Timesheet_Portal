@@ -19,7 +19,6 @@ parser = reqparse.RequestParser()
 parser.add_argument('UserId', type=str, location='headers', required=True)
 
 response_model = ns.model('Get_month_records', {
-post_response_model = ns.model('Get_month_records', {
     'result': fields.String,    
 })
 

@@ -24,8 +24,8 @@ parser.add_argument('Task', type=str, location='json', required=True)
 parser.add_argument('subtask', type=str, location='json', required=True)
 parser.add_argument('timespent', type=int, location='json', required=True)
 parser.add_argument('description', type=str, location='json', required=True)
+
 response_model = ns.model('Update_entry', {
-post_response_model = ns.model('Update_entry', {
     'result': fields.String,    
 })
 

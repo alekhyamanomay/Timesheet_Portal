@@ -21,7 +21,6 @@ parser = reqparse.RequestParser()
 parser.add_argument('UserId', type=str, location='headers', required=True)
 
 response_model = ns.model('Get_history', {
-post_response_model = ns.model('Get_history', {
     'result': fields.String,    
 })
 

@@ -26,7 +26,6 @@ parser.add_argument('timespent', type=int, location='json', required=True)
 parser.add_argument('description', type=str, location='json', required=True)
 
 response_model = ns.model('Create_entry', {
-post_response_model = ns.model('Get_history', {
     'result': fields.String,        
 })
 

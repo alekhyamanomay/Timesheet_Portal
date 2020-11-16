@@ -1,7 +1,7 @@
 from flask_restx import Resource, reqparse, fields
 from ...helpers import token_verify_or_raise
 from ...models import db
-from ...models.Users import User
+from ...models.users import User
 from werkzeug.exceptions import UnprocessableEntity, InternalServerError
 from . import ns
 from ... import LOG
