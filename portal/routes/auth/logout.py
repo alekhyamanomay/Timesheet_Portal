@@ -22,7 +22,12 @@ class Logout(Resource):
     @ns.expect(parser, validate=True)
     def post(self):
         args = parser.parse_args(strict=False)
-        token = token_verify_or_raise(token=args["Authorization"], user=args["username"])
+        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        Email =  y['email']
+        UserID = y['userid']
+        
+        token_verify_or_raise(args['Authorization'], Email, UserID )
+
         blacklist = JWTTokenBlacklist(JWTToken=args["Authorization"],
                                       LoggedOutTime=datetime.utcnow())
         try:

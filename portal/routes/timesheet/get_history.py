@@ -18,13 +18,14 @@ from . import ns
 from ... import APP, LOG
 
 parser = reqparse.RequestParser()
-parser.add_argument('UserId', type=str, location='headers', required=True)
+parser.add_argument('Authorization', type=str,
+                    location='headers', required=True)
 
 response_model = ns.model('Get_history', {
     'result': fields.String,    
 })
 
-@ns.route('/Get_history')
+@ns.route('/get_history')
 class GetHistory(Resource):
     @ns.doc(description='Get_history',
             responses={200: 'OK', 400: 'Bad Request', 401: 'Unauthorized', 500: 'Internal Server Error'})
@@ -33,8 +34,12 @@ class GetHistory(Resource):
     def post(self):
         records = []
         args = parser.parse_args(strict=True)
-        UserId = args['UserId']
         try:
+            y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+            Email =  y['email']
+            UserID = y['userid']
+            token_verify_or_raise(args['Authorization'], Email, UserID )
+            
             all_records = TimesheetEntry.query.filter(UserId= UserId).all()[0:20]
             for record in all_records:
                 records.append({

@@ -68,7 +68,6 @@ class Login(Resource):
             return {
                 "username": userinfo.UserName,
                 "userid":userinfo.UserId,
-                "userId":userinfo.UserId,
                 "email": userinfo.Email,
                 "role": role,
                 'token': str(token)

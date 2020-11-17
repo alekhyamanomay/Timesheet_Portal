@@ -8,19 +8,16 @@ from ...encryption import Encryption
 from ...models.users import User
 from ...models.timesheetentry import TimesheetEntry
 # from ...models.jwttokenblacklist import JWTTokenBlacklist
-from ...models import status, roles
+from ...models import db
 from ...api import api
 from . import ns
 from ... import APP, LOG
 
 parser = reqparse.RequestParser()
-# parser.add_argument('Ipaddress', type=str, location='json', required=False)
-parser.add_argument('Name', type=str, location='headers', required=True)
-parser.add_argument('Email', type=str, location='headers', required=True)
-parser.add_argument('Date', type=inputs.date_from_iso8601, location='headers', required=False)
-parser.add_argument('Customer', type=str, location='json', required=True)
-parser.add_argument('Project', type=str, location='json', required=True)
-parser.add_argument('Task', type=str, location='json', required=True)
+parser.add_argument('date', type=inputs.date_from_iso8601, location='headers', required=False)
+parser.add_argument('customer', type=str, location='json', required=True)
+parser.add_argument('project', type=str, location='json', required=True)
+parser.add_argument('task', type=str, location='json', required=True)
 parser.add_argument('subtask', type=str, location='json', required=True)
 parser.add_argument('timespent', type=int, location='json', required=True)
 parser.add_argument('description', type=str, location='json', required=True)
@@ -30,7 +27,7 @@ response_model = ns.model('Update_entry', {
 })
 
 
-@ns.route('/Update_entry')
+@ns.route('/update_entry')
 class Update_entry(Resource):
     @ns.doc(description='Update_entry',
             responses={200: 'OK', 400: 'Bad Request', 401: 'Unauthorized', 500: 'Internal Server Error'})
@@ -38,27 +35,32 @@ class Update_entry(Resource):
     @ns.marshal_with(response_model)
     def post(self):
         args = parser.parse_args(strict=True)
-        Name = args['Name']
-        Email = args['Email']
-        Date = args['Date']
-        Customer = args['Customer']
-        Project = args['Project']
-        Task = args['Task']
+        
+        Date = args['date']
+        Customer = args['customer']
+        Project = args['project']
+        Task = args['task']
         Subtask = args['subtask']
         timespent = args['timespent']
         description = args['description']
         
         try:
+            
+            y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+            Email =  y['email']
+            UserID = y['userid']
+
+            token_verify_or_raise(args['Authorization'], Email, UserID )
             userinfo = User.query.filter_by(Email= Email).first()
             if userinfo is None:
                 LOG.debug("Unable to find user details %s", Email)
                 raise UnprocessableEntity('Unable to find user details')
-            entry = TimesheetEntry.query.filter_by(EntryId = EntryId).first()
-            entry.WeekDate = Date,
-            entry.Customer = Customer,
-            entry.Project = Project,
-            entry.Task = Task, 
-            entry.Subtask= Subtask, 
+            entry = TimesheetEntry.query.filter_by(EntryId = args['entryid']).first()
+            entry.WeekDate = date,
+            entry.Customer = customer,
+            entry.Project = project,
+            entry.Task = task, 
+            entry.Subtask= subtask, 
             entry.timespent = timespent, 
             entry.description= description
                     
