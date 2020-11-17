@@ -60,7 +60,7 @@ for i in userids:
     # if emails[i][1] == "shaik.farooq@manomay.biz":
     #     _SendEmail([emails[i][1]],subject,body,cc=[])
     # time.sleep(0.75)
-    result = _SendEmail(["shaik.farooq@manomay.biz"],subject,body,[])
+    result = _SendEmail(init.app,["shaik.farooq@manomay.biz"],subject,body,[])
     if result == "mail sent":
         pass
         
