@@ -6,7 +6,7 @@ from flask_restx import Resource, reqparse, fields, inputs
 from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, InternalServerError
 from ...encryption import Encryption
 from ...models.users import User
-from ...models.timesheet_entry import TimesheetEntry
+from ...models.timesheetentry import TimesheetEntry
 # from ...models.jwttokenblacklist import JWTTokenBlacklist
 from ...models import db
 from ...api import api

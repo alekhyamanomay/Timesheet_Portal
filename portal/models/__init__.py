@@ -11,7 +11,7 @@ def init_app(app):
     with app.app_context():
         try :
             from .users import User
-            from .timesheet_entry import TimesheetEntry
+            from .timesheetentry import TimesheetEntry
             from .jwttokenblacklist import JWTTokenBlacklist
         except Exception as e:
             print(e)

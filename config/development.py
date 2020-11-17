@@ -9,10 +9,9 @@ LOG_DIR = os.path.join(DATA_DIR, 'log')
 SECRET_KEY = 'BT-=f~i1IlIHF(#'
 JWT_SECRET = 'R]B+=46,e=gKtI/'
 
-SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://DESKTOP-RMVRFH6/Timesheet_db?driver=SQL Server?Trusted_Connection=Yes'
-# WRITE_DB = 'mssql+pyodbc://DESKTOP-IRHNO1M\SQLEXPRESS/TestDB?driver=SQL Server?Trusted_Connection=Yes'
-# READ_DB = 'mssql+pyodbc://DESKTOP-IRHNO1M\SQLEXPRESS/ICBLDataView?driver=SQL Server?Trusted_Connection=No'
-
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+# SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://DESKTOP-RMVRFH6/Timesheet_db?driver=SQL Server?Trusted_Connection=Yes'
+SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://DESKTOP-IRHNO1M\SQLEXPRESS/TimeSheet?driver=SQL Server?Trusted_Connection=Yes'
 DEFAULT_PASSWORD= 'tZ4Olwg7n7od6J9lqmtTpw=='
 
 FRONTEND_URL= 'https://www.google.com/'
