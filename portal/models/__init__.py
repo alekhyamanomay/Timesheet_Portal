@@ -5,9 +5,6 @@ db = SQLAlchemy()
 def init_app(app):
     db.init_app(app)
     app.logger.info("initialized models")
-    # app.config['SQLALCHEMY_BINDS'] = {
-    #     'writeonly': app.config['SQLALCHEMY_DATABASE_URI'],
-    # }
     with app.app_context():
         try :
             from .users import User
