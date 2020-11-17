@@ -42,9 +42,9 @@ for i in timesheetdata:
 print(userids)
 print(timesheetdata)
 tracker = []
+subject = f"Timesheet entry for {yesterday}"
 for i in userids:
-    subject = f"Timesheet entry for {yesterday}"
-
+    
     print(f"heeeya,{emails[i][1]}")
     body = f'''<html>
             <body>
@@ -60,8 +60,7 @@ for i in userids:
     # if emails[i][1] == "shaik.farooq@manomay.biz":
     #     _SendEmail([emails[i][1]],subject,body,cc=[])
     # time.sleep(0.75)
-    # thr = Thread(target=_SendEmail, args=[init.app,["shaik.farooq@manomay.biz"],subject,body,[]])
-    # thr.start()
-    # print(thr)
-    tracker.append("<p><b>"+emails[i][0]+"</b> didn't fill the sheets remainder sent to: "+emails[i][1]+" and CC'd to "+emails[i][2]+" & "+emails[i][2]+"</p>")
-print("\n".join(tracker))
+    result = _SendEmail(["shaik.farooq@manomay.biz"],subject,body,[])
+    if result == "mail sent":
+        pass
+        

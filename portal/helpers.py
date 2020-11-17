@@ -96,7 +96,6 @@ def uuid_generator():
     return str(uuid.uuid4())
 
 def _SendEmail(to_address,subject,body,cc=[]):
-    
     domain = app.config['MAILSERVER_DOMAIN']
     email= app.config['MAILSERVER_USERNAME']
     if app.config["ENVIRONMENT"] == "DEVELOPMENT":
