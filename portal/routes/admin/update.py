@@ -33,7 +33,7 @@ class UpdateUser(Resource):
         username = args['username']
         token = args["Authorization"]
         UserId = args['UserId']
-        token_verify_or_raise(token, username)
+        token_verify_or_raise(args['Authorization'], Email, UserID )
         try:
             user = User.query.filter_by(UserId=UserId).first()
             if user is None:

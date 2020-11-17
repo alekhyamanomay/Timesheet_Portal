@@ -39,7 +39,7 @@ class GetUsers(Resource):
         username = args['username']
         token = args["Authorization"]
         # ip = args['Ipaddress']
-        token_verify_or_raise(token, username)
+        token_verify_or_raise(args['Authorization'], Email, UserID )
         users = User.query.all()
         # print(users)
         response = []

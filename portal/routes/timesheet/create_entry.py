@@ -9,7 +9,7 @@ from ...encryption import Encryption
 from ...models.users import User
 from ...models.timesheet_entry import TimesheetEntry
 # from ...models.jwttokenblacklist import JWTTokenBlacklist
-from ...models import status, roles
+from ...models import db
 from ...api import api
 from . import ns
 from ... import APP, LOG
@@ -25,12 +25,11 @@ parser.add_argument('subtask', type=str, location='json', required=True)
 parser.add_argument('timespent', type=int, location='json', required=True)
 parser.add_argument('description', type=str, location='json', required=True)
 
-response_model = ns.model('Create_entry', {
+response_model = ns.model('create_entry', {
     'result': fields.String,        
 })
 
-
-@ns.route('/Create_entry')
+@ns.route('/create_entry')
 class Create_entry(Resource):
     @ns.doc(description='Create_entry',
             responses={200: 'OK', 400: 'Bad Request', 401: 'Unauthorized', 500: 'Internal Server Error'})
@@ -39,7 +38,6 @@ class Create_entry(Resource):
     def post(self):
         
         args = parser.parse_args(strict=True)
-
         Date = args['date']
         Customer = args['customer']
         Project = args['project']
@@ -47,18 +45,21 @@ class Create_entry(Resource):
         Subtask = args['subtask']
         timespent = args['timespent']
         description = args['description']
-
-        y = jwt.decode(args['Authorization'], 'secret', algorithms=['HS256'])
-        print(y)
-        token_verify_or_raise(args['Authorization'], args['username'])
         
+        entrydatetime = datetime.now().strftime('%H:%M.%S')
+
+        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        Email =  y['email']
+        UserID = y['userid']
+        
+        token_verify_or_raise(args['Authorization'], Email, UserID )
         try:
             userinfo = User.query.filter_by(Email= Email).first()
             if userinfo is None:
                 LOG.debug("Unable to find user details %s", Email)
                 raise UnprocessableEntity('Unable to find user details')
-            entry = TimesheetEntry(UserId = userinfo.UserId, UserName = userinfo.UserName, WeekDate = Date, Customer = Customer,
-                          Project = Project, Task = Task, Subtask= Subtask, timespent = timespent, description= description )
+            entry = TimesheetEntry(UserId = userinfo.UserId, UserName = userinfo.UserName, WeekDate = Date, Customer = Customer, EntryDatetime = entrydatetime,
+                          Project = Project, TaskName = Task, SubTaskName= Subtask, Timespent = timespent, Description= description )
                           
             db.session.add(entry)
             db.session.commit()

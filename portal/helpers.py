@@ -40,10 +40,9 @@ def converter(o):
         return o.__str__()
 
 
-def token_verify_or_raise(token, user):
-    print(token,"***************")
-    decoded_token = token_verify(token, user)
-    print("decoded token",decoded_token)
+
+def token_verify_or_raise(token, email ,userid):
+    decoded_token = token_verify(token, email ,userid)
     if decoded_token is None:
         raise Unauthorized()
 
@@ -54,14 +53,15 @@ def token_verify_or_raise(token, user):
     return decoded_token
 
 
-def token_verify(token, user):
+def token_verify(token, email ,userid):
     decoded = None
+
     try:
         decoded = jwt.decode(token, key=app.config['JWT_SECRET'])
-        print("decoded",decoded)
-        if decoded["username"] != user :
+        print(decoded)
+        if decoded["userid"] != userid or decoded["email"] != email:
             decoded = None
-        print("decoded",decoded)
+        print(decoded)
     except jwt.DecodeError as e:
         print("decode error", e)
 
@@ -71,6 +71,7 @@ def token_verify(token, user):
         decoded = None
         print("key error")
     return decoded
+
 
 
 def randomStringwithDigitsAndSymbols(stringLength=10):

@@ -13,8 +13,8 @@ import jwt
 # from ...services.mail import send_email
 
 parser = reqparse.RequestParser()
-parser.add_argument('Authorization', type=str,
-                    location='headers', required=True)
+# parser.add_argument('Authorization', type=str,
+#                     location='headers', required=True)
 parser.add_argument('newuser', type=str, location='json', required=True)
 parser.add_argument('newuserid', type=str, location='json', required=True)
 parser.add_argument('email', type=str, location='json', required=True)
@@ -42,10 +42,10 @@ class CreateUser(Resource):
         args = parser.parse_args(strict=False)
         # token_verify_or_raise(args['Authorization'], args['username'])
         
-        user = User.query.filter_by(Email=args["Email"]).first()
+        user = User.query.filter_by(Email=args["email"]).first()
         if user is not None:
             return {"result": "failure", "error": "user exists with this email"}, 400
-        Password = args['userid']
+        Password = args['newuserid']
         enc_pass = Encryption().encrypt(Password)
         usermodel = User(UserName=args['newuser'],
                           UserId = args['newuserid'],
