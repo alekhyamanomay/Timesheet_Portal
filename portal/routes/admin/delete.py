@@ -13,10 +13,8 @@ from . import ns
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
-parser.add_argument('username', type=str, location='headers', required=True)
-
-parser.add_argument('name', type=str, location='json', required=True)
-parser.add_argument('UserId', type=str, location='json', required=True)
+parser.add_argument('username', type=str, location='json', required=True)
+parser.add_argument('userid', type=str, location='json', required=True)
 
 response_model = ns.model('PostUserCreate', {
     'result': fields.String,
@@ -32,12 +30,17 @@ class DeleteUser(Resource):
     @ns.marshal_with(response_model)
     def delete(self):
         args = parser.parse_args(strict=False)
-        token_verify_or_raise(args['Authorization'], args['username'])
-        user = User.query.filter_by(UserID=args['UserId'], UserName= args["name"]).first()
+        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        
+        Email =  y['email']
+        UserId = y['userid']
+            
+        token_verify_or_raise(args['Authorization'], Email, UserId )
+        user = User.query.filter_by(UserID=args['userid']).first()
         if user is not None:
             UnprocessableEntity("User not found")
         user.Status= status.STATUS_INACTIVE
         db.session.commit()
-        LOG.info("User %s Deleted Successfully, by %s", args["name"],args["username"])
+        LOG.info("User %s Deleted Successfully, by %s", args["username"])
 
         return {"result": "success", "error": None}

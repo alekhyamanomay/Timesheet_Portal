@@ -8,13 +8,12 @@ from ... import LOG
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str, location='headers', required=True)
-parser.add_argument('username', type=str, location='headers', required=True)
-parser.add_argument('UserId', type=str, location='headers', required=True)
+parser.add_argument('userid', type=str, location='headers', required=True)
 parser.add_argument('email', type=str, location='json', required=True)
-parser.add_argument('Manager', type=str, location='json', required=True)
-parser.add_argument('ManagerEmail', type=str, location='json', required=True)
-parser.add_argument('SecondaryManager', type=str, location='json', required=True)
-parser.add_argument('SecondaryManagerEmail', type=str, location='json', required=True)
+parser.add_argument('manager', type=str, location='json', required=True)
+parser.add_argument('manageremail', type=str, location='json', required=True)
+parser.add_argument('secondarymanager', type=str, location='json', required=True)
+parser.add_argument('secondarymanageremail', type=str, location='json', required=True)
 parser.add_argument('role', type=str, location='json', required=True)
 parser.add_argument('status', type=str, location='json', required=True)
 
@@ -31,18 +30,21 @@ class UpdateUser(Resource):
     def post(self):
         args = parser.parse_args(strict=False)
         username = args['username']
-        token = args["Authorization"]
-        UserId = args['UserId']
-        token_verify_or_raise(args['Authorization'], Email, UserID )
+        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        
+        Email =  y['email']
+        UserId = y['userid']
+            
+        token_verify_or_raise(args['Authorization'], Email, UserId )
         try:
             user = User.query.filter_by(UserId=UserId).first()
             if user is None:
                 UnprocessableEntity("user is not Available")
             user.Email = args["email"]
-            user.Manager = args["Manager"]
-            user.ManagerEmail = args["ManagerEmail"]
-            user.SecondaryManager = args['SecondaryManager']
-            user.SecondaryManagerEmail = args['SecondaryManagerEmail']
+            user.Manager = args["manager"]
+            user.ManagerEmail = args["manageremail"]
+            user.SecondaryManager = args['secondarymanager']
+            user.SecondaryManagerEmail = args['secondarymanageremail']
             user.Role = args["role"]
             user.Status = args["status"]
             db.session.commit()

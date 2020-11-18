@@ -13,8 +13,8 @@ import jwt
 # from ...services.mail import send_email
 
 parser = reqparse.RequestParser()
-# parser.add_argument('Authorization', type=str,
-#                     location='headers', required=True)
+parser.add_argument('Authorization', type=str,
+                    location='headers', required=True)
 parser.add_argument('newuser', type=str, location='json', required=True)
 parser.add_argument('newuserid', type=str, location='json', required=True)
 parser.add_argument('email', type=str, location='json', required=True)
@@ -40,7 +40,12 @@ class CreateUser(Resource):
     def post(self):
         
         args = parser.parse_args(strict=False)
-        # token_verify_or_raise(args['Authorization'], args['username'])
+        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        
+        Email =  y['email']
+        UserId = y['userid']
+            
+        token_verify_or_raise(args['Authorization'], Email, UserId )
         
         user = User.query.filter_by(Email=args["email"]).first()
         if user is not None:

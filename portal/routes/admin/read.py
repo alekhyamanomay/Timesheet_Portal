@@ -12,15 +12,15 @@ parser.add_argument('Authorization', type=str,
 parser.add_argument('username', type=str, location='headers', required=True)
 
 response_model_child = ns.model('GetGetEmployerMemberRelationChild', {
-    "UserNo": fields.String,
-    "UserName": fields.String,
-    "Email": fields.String,
-    "Manager": fields.String,
-    "ManagerEmail": fields.String,
-    "SecondaryManager": fields.String,
-    "SecondaryManagerEmail": fields.String,
-    "Role": fields.String,
-    "Status": fields.String
+    "userid": fields.String,
+    "username": fields.String,
+    "email": fields.String,
+    "manager": fields.String,
+    "manageremail": fields.String,
+    "secondarymanager": fields.String,
+    "secondarymanageremail": fields.String,
+    "role": fields.String,
+    "status": fields.String
 })
 
 response_model = ns.model('GetUsers', {
@@ -46,15 +46,15 @@ class GetUsers(Resource):
         for user in users:
             print(user.Username)
             response.append({
-                "UserNo": user.UserID,
-                "UserName": user.Username,
-                "Email": user.Email,
-                "Manger": user.Manger,
-                "ManagerEmail": user.ManagerEmail,
-                "SecondaryManager": user.SecondaryManager,
-                "SecondaryManagerEmail": user.SecondaryManagerEmail,
-                "Role": user.Role,
-                "Status": user.Status,
+                "userid": user.UserID,
+                "username": user.Username,
+                "email": user.Email,
+                "manger": user.Manger,
+                "manageremail": user.ManagerEmail,
+                "secondarymanager": user.SecondaryManager,
+                "secondarymanageremail": user.SecondaryManagerEmail,
+                "role": user.Role,
+                "status": user.Status,
             }
             )
         return {"users": response}, 200
