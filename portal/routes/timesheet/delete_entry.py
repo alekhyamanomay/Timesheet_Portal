@@ -22,7 +22,6 @@ response_model = ns.model('Delete_entry', {
     'result': fields.String,    
 })
 
-
 @ns.route('/delete_entry')
 class Delete_entry(Resource):
     @ns.doc(description='Delete_entry',

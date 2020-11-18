@@ -58,10 +58,9 @@ def token_verify(token, email ,userid):
 
     try:
         decoded = jwt.decode(token, key=app.config['JWT_SECRET'])
-        print(decoded)
         if decoded["userid"] != userid or decoded["email"] != email:
             decoded = None
-        print(decoded)
+
     except jwt.DecodeError as e:
         print("decode error", e)
 

@@ -50,12 +50,14 @@ class Login(Resource):
                 raise UnprocessableEntity('User is not active')
             
             role = userinfo.Role
+            # token_create = datetime.utcnow()
             exp = datetime.utcnow() + timedelta(hours=1, minutes=30)
 
             payload = {
                 'username': userinfo.UserName,
                 'email': userinfo.Email,
                 'userid':userinfo.UserId,
+                # 'token_create': token_create,
                 'exp': exp,
                 'role': role,
             }
@@ -63,7 +65,7 @@ class Login(Resource):
             token = jwt.encode(key=APP.config['JWT_SECRET'], algorithm='HS256', payload=payload )
 
             token = token.decode('utf-8')
-            print(token)
+            # print(token)
             LOG.debug('User %s authenticated successfully', userinfo.UserName)
             return {
                 "username": userinfo.UserName,

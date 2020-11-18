@@ -5,5 +5,6 @@ def init_app(app):
     from .user import profile
     from . import index
     from .Testing import test
-    from .timesheet import create_entry, delete_entry, get_history, get_monthy_records, get_week_records, Update_entry
+    from .timesheet import (create_entry, delete_entry, get_recent_records,
+                           get_history, get_today_records, get_week_records, Update_entry)
     app.logger.info("Initialized routes")
