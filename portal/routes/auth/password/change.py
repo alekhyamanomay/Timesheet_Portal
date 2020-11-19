@@ -15,9 +15,7 @@ from .... import APP, LOG
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str, location='headers', required=True)
-
-parser.add_argument('username', type=str, location='headers', required=True)
-parser.add_argument('user', type=str, location='json', required=True)
+parser.add_argument('email', type=str, location='json', required=True)
 parser.add_argument('oldPassword', type=str, location='json', required=True)
 parser.add_argument('newPassword', type=str, location='json', required=True)
 
@@ -34,16 +32,12 @@ class PasswordChange(Resource):
     @ns.marshal_with(response_model)
     def post(self):
         args = parser.parse_args(strict=False)
-        token = token_verify_or_raise(token=args["Authorization"], user=args["username"])
-
-        # TODO:
-        # Verify the role from token before proceeding with password chanaging
-
-        UserId = args["UserId"]
+    
+        email = args["email"]
         old_pass = args["oldPassword"]
         new_pass = args["newPassword"]
         try:
-            user = User.query.filter_by(UserId=UserId).first()
+            user = User.query.filter_by(Email=email).first()
             if user is None:
                 raise UnprocessableEntity('Username is not valid')
 

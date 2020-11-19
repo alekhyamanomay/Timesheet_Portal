@@ -1,30 +1,33 @@
+from datetime import date, timedelta
 import jwt
 import json
 from datetime import datetime, timedelta
-from sqlalchemy import extract
 from flask import request
 from flask_restx import Resource, reqparse, fields, inputs
 from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, InternalServerError
 from ...encryption import Encryption
 from ...models.users import User
-from ...models.timesheetentry import TimesheetEntry
-from ...helpers import token_verify_or_raise
-from ...models import status, roles
+from ...models.timesheetentry import TimesheetEntry  
+from ...helpers import token_verify_or_raise                                                            
+# from ...models.jwttokenblacklist import JWTTokenBlacklist
+from ...models import db
+from sqlalchemy import and_
 from ...api import api
 from . import ns
 from ... import APP, LOG
-from datetime import date 
+
+
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
-
-response_model_child = ns.model('gethistory', {
+parser.add_argument('date', type=str, location='json', required=True)
+response_model_child = ns.model('gettodayrecords', {
     "EntryDate": fields.String,
     "Customer": fields.String,
     "Project": fields.String,
     "Task": fields.String,
     "SubTask": fields.String,
-    "TimeSpent": fields.Float,
+    "TimeSpent": fields.String,
     "Description": fields.String
 })
 
@@ -32,50 +35,41 @@ response_model = ns.model('GetUsers', {
     "records": fields.List(fields.Nested(response_model_child))
 })
 
-@ns.route('/get_history')
-class GetHistory(Resource):
-    @ns.doc(description='Get_history',
+@ns.route('/get_today_records')
+class Get_today_records(Resource):
+    @ns.doc(description='Get_today_records',
             responses={200: 'OK', 400: 'Bad Request', 401: 'Unauthorized', 500: 'Internal Server Error'})
     @ns.expect(parser, validate=True)
     @ns.marshal_with(response_model)
-    def get(self):
+    def post(self):
         records = []
-        Month_records = []
         args = parser.parse_args(strict=True)
+        
         try:
             y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
         
             Email =  y['email']
             UserId = y['userid']
-            
+            # print(args['date'][0:10],"********")
             token_verify_or_raise(args['Authorization'], Email, UserId )
-            # To get current month records
-            today = date.today() 
-            month = today.month
-            if month == 1:
-                month1 = 12
-            else:
-                month1 =  month - 1
-            months = (month, month1)
-            for mon in months:
-                Month_records += TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(extract('month', TimesheetEntry.WeekDate) == mon).all()    
-        
-            # To get last 30 days records
-            # filter_after = datetime.today() - timedelta(days = 30)
-            # Month_records+= TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(TimesheetEntry.WeekDate >= filter_after).all()
-            if Month_records:
-                if len(Month_records) == 1:
+            
+            Today_records = TimesheetEntry.query.filter_by(UserId = UserId).filter(TimesheetEntry.WeekDate.ilike("%" + args['date'][0:10] +"%")).all()
+                            # and_ (TimesheetEntry.WeekDate.ilike("%" + args['date'][0:10] +"%"))).all()
+            
+            # print(Today_records,"*******")  
+            if Today_records:
+                if len(Today_records) == 1:
                     records.append({
-                            "EntryDate":Month_records[0].WeekDate,
-                            "Customer":Month_records[0].Customer,
-                            "Project":Month_records[0].Project,
-                            "Task":Month_records[0].TaskName,
-                            "SubTask":Month_records[0].SubTaskName,
-                            "TimeSpent":Month_records[0].Timespent,
-                            "Description":Month_records[0].Description
+                            "EntryDate":Today_records[0].WeekDate,
+                            "Customer":Today_records[0].Customer,
+                            "Project":Today_records[0].Project,
+                            "Task":Today_records[0].TaskName,
+                            "SubTask":Today_records[0].SubTaskName,
+                            "TimeSpent":Today_records[0].Timespent,
+                            "Description":Today_records[0].Description
                             })
                 else:
-                    for record in Month_records[:-1]:
+                    for record in Today_records:
                         records.append({
                             "EntryDate":record.WeekDate,
                             "Customer":record.Customer,
@@ -85,10 +79,23 @@ class GetHistory(Resource):
                             "TimeSpent":record.Timespent,
                             "Description":record.Description
                             })
-            5
+            
             return {"records": records}, 200
 
         except Exception as e:
             LOG.warning('Exception happened during fetching records: %s', e)
             raise InternalServerError(e)
 
+
+# days_per_month = {1: 31, 2: 29, 3: 31, ...} # you can fill this in yourself
+# # lower bound
+# first = today.replace(day=1)
+# # upper bound
+# try:
+#     last = today.replace(day=days_per_month[today.month])
+# except ValueError:
+#     if today.month == 2:  # Not a leap year
+#         last = today.replace(day=28)
+#     else:
+#         raise 
+    

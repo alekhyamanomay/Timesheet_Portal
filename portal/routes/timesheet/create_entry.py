@@ -46,7 +46,7 @@ class Create_entry(Resource):
         timespent = args['timespent']
         description = args['description']
         
-        entrydatetime = datetime.now().strftime('%H:%M.%S')
+        entrydatetime = datetime.now()
 
         y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
         Email =  y['email']
@@ -59,7 +59,7 @@ class Create_entry(Resource):
                 LOG.debug("Unable to find user details %s", Email)
                 raise UnprocessableEntity('Unable to find user details')
             entry = TimesheetEntry(UserId = userinfo.UserId, UserName = userinfo.UserName, WeekDate = Date, Customer = Customer, EntryDatetime = entrydatetime,
-                          Project = Project, TaskName = Task, SubTaskName= Subtask, Timespent = timespent, Description= description )
+                          Email = Email, Project = Project, TaskName = Task, SubTaskName= Subtask, Timespent = timespent, Description= description )
                           
             db.session.add(entry)
             db.session.commit()

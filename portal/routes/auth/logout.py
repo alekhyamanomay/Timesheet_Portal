@@ -13,20 +13,14 @@ from ... import APP, LOG
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str, location='headers', required=True)
-parser.add_argument('username', type=str, location='headers', required=True)
 
 @ns.route("/logout")
 class Logout(Resource):
-    @ns.doc(description='Create New User',
+    @ns.doc(description='logout',
             responses={200: 'OK', 400: 'Bad Request', 401: 'Unauthorized', 500: 'Internal Server Error'})
     @ns.expect(parser, validate=True)
-    def post(self):
+    def get(self):
         args = parser.parse_args(strict=False)
-        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
-        Email =  y['email']
-        UserID = y['userid']
-        
-        token_verify_or_raise(args['Authorization'], Email, UserID )
 
         blacklist = JWTTokenBlacklist(JWTToken=args["Authorization"],
                                       LoggedOutTime=datetime.utcnow())

@@ -9,7 +9,7 @@ from ...encryption import Encryption
 from ...models.users import User
 from ...models.timesheetentry import TimesheetEntry
 from ...helpers import token_verify_or_raise
-from ...models import status, roles
+from ...models import db
 from ...api import api
 from . import ns
 from ... import APP, LOG
@@ -18,7 +18,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
 
-response_model_child = ns.model('gethistory', {
+response_model_child = ns.model('getrecententries', {
     "EntryDate": fields.String,
     "Customer": fields.String,
     "Project": fields.String,
@@ -32,15 +32,14 @@ response_model = ns.model('GetUsers', {
     "records": fields.List(fields.Nested(response_model_child))
 })
 
-@ns.route('/get_history')
+@ns.route('/get_recent_entries')
 class GetHistory(Resource):
-    @ns.doc(description='Get_history',
+    @ns.doc(description='get_recent_entries',
             responses={200: 'OK', 400: 'Bad Request', 401: 'Unauthorized', 500: 'Internal Server Error'})
     @ns.expect(parser, validate=True)
     @ns.marshal_with(response_model)
     def get(self):
         records = []
-        Month_records = []
         args = parser.parse_args(strict=True)
         try:
             y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
@@ -49,33 +48,21 @@ class GetHistory(Resource):
             UserId = y['userid']
             
             token_verify_or_raise(args['Authorization'], Email, UserId )
-            # To get current month records
-            today = date.today() 
-            month = today.month
-            if month == 1:
-                month1 = 12
-            else:
-                month1 =  month - 1
-            months = (month, month1)
-            for mon in months:
-                Month_records += TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(extract('month', TimesheetEntry.WeekDate) == mon).all()    
-        
-            # To get last 30 days records
-            # filter_after = datetime.today() - timedelta(days = 30)
-            # Month_records+= TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(TimesheetEntry.WeekDate >= filter_after).all()
-            if Month_records:
-                if len(Month_records) == 1:
+            Recent_records = TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).all()[:5]
+            
+            if Recent_records:
+                if len(Recent_records) == 1:
                     records.append({
-                            "EntryDate":Month_records[0].WeekDate,
-                            "Customer":Month_records[0].Customer,
-                            "Project":Month_records[0].Project,
-                            "Task":Month_records[0].TaskName,
-                            "SubTask":Month_records[0].SubTaskName,
-                            "TimeSpent":Month_records[0].Timespent,
-                            "Description":Month_records[0].Description
+                            "EntryDate":Recent_records[0].WeekDate,
+                            "Customer":Recent_records[0].Customer,
+                            "Project":Recent_records[0].Project,
+                            "Task":Recent_records[0].TaskName,
+                            "SubTask":Recent_records[0].SubTaskName,
+                            "TimeSpent":Recent_records[0].Timespent,
+                            "Description":Recent_records[0].Description
                             })
                 else:
-                    for record in Month_records[:-1]:
+                    for record in Recent_records:
                         records.append({
                             "EntryDate":record.WeekDate,
                             "Customer":record.Customer,
@@ -85,10 +72,11 @@ class GetHistory(Resource):
                             "TimeSpent":record.Timespent,
                             "Description":record.Description
                             })
-            5
+                        
             return {"records": records}, 200
 
         except Exception as e:
             LOG.warning('Exception happened during fetching records: %s', e)
             raise InternalServerError(e)
+
 

@@ -17,31 +17,6 @@ SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://Manomay1:Manomay@9@DESKTOP-IRHNO1M\SQL
 DEFAULT_PASSWORD= 'tZ4Olwg7n7od6J9lqmtTpw=='
 
 FRONTEND_URL= 'https://www.google.com/'
-# CORS_HEADERS = [
-#     'Ipaddress', 'Authorization', 'username',
-#     'Content-Type'
-# ]
-
-# CORS_ORIGIN_WHITELIST = [
-#     "http://editor.swagger.io",
-#     "https://editor.swagger.io",
-#     "http://generator.swagger.io",
-#     "https://generator.swagger.io",
-
-#     "http://127.0.0.1",
-#     "https://127.0.0.1",
-#     "http://127.0.0.1:5000",
-#     "https://127.0.0.1:5000",
-#     "http://127.0.0.1:4200",
-#     "https://127.0.0.1:4200",
-
-#     "http://localhost",
-#     "https://localhost",
-#     "http://localhost:5000",
-#     "https://localhost:5000",
-#     "http://localhost:4200",
-#     "https://localhost:4200"
-# ]
 
 MAILSERVER_DOMAIN = 'smtp.gmail.com'
 MAILSERVER_PORT = 465
