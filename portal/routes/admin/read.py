@@ -4,14 +4,14 @@ from ...models import db
 from ...models.users import User
 from werkzeug.exceptions import UnprocessableEntity, InternalServerError
 from . import ns
-from ... import LOG
+from ... import APP, LOG
+import jwt
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
-parser.add_argument('username', type=str, location='headers', required=True)
 
-response_model_child = ns.model('GetGetEmployerMemberRelationChild', {
+response_model_child = ns.model('Getusersdata', {
     "userid": fields.String,
     "username": fields.String,
     "email": fields.String,
@@ -23,7 +23,7 @@ response_model_child = ns.model('GetGetEmployerMemberRelationChild', {
     "status": fields.String
 })
 
-response_model = ns.model('GetUsers', {
+response_model = ns.model('GetUsersData', {
     "users": fields.List(fields.Nested(response_model_child))
 })
 
@@ -36,20 +36,20 @@ class GetUsers(Resource):
     @ns.marshal_with(response_model)
     def get(self):
         args = parser.parse_args(strict=False)
-        username = args['username']
-        token = args["Authorization"]
-        # ip = args['Ipaddress']
-        token_verify_or_raise(args['Authorization'], Email, UserID )
+        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        
+        Email =  y['email']
+        UserId = y['userid']
+            
+        token_verify_or_raise(args['Authorization'], Email, UserId )
         users = User.query.all()
-        # print(users)
         response = []
         for user in users:
-            print(user.Username)
             response.append({
-                "userid": user.UserID,
-                "username": user.Username,
+                "userid": user.UserId,
+                "username": user.UserName,
                 "email": user.Email,
-                "manger": user.Manger,
+                "manager": user.Manager,
                 "manageremail": user.ManagerEmail,
                 "secondarymanager": user.SecondaryManager,
                 "secondarymanageremail": user.SecondaryManagerEmail,

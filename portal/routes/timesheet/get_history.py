@@ -50,13 +50,19 @@ class GetHistory(Resource):
             
             token_verify_or_raise(args['Authorization'], Email, UserId )
             # To get current month records
-            today = date.today()    
+            today = date.today() 
             month = today.month
-            Month_records=TimesheetEntry.query.filter_by(UserId= UserId).filter(extract('month', TimesheetEntry.EntryDatetime) == month).all()    
+            if month == 1:
+                month1 = 12
+            else:
+                month1 =  month - 1
+            months = (month, month1)
+            for mon in months:
+                Month_records += TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(extract('month', TimesheetEntry.WeekDate) == mon).all()    
         
             # To get last 30 days records
-            filter_after = datetime.today() - timedelta(days = 30)
-            Month_records+= TimesheetEntry.query.filter_by(UserId= UserId).filter(TimesheetEntry.EntryDatetime >= filter_after).all()
+            # filter_after = datetime.today() - timedelta(days = 30)
+            # Month_records+= TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(TimesheetEntry.WeekDate >= filter_after).all()
             if Month_records:
                 if len(Month_records) == 1:
                     records.append({
@@ -79,7 +85,7 @@ class GetHistory(Resource):
                             "TimeSpent":record.Timespent,
                             "Description":record.Description
                             })
-            
+            5
             return {"records": records}, 200
 
         except Exception as e:

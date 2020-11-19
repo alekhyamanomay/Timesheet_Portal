@@ -4,11 +4,12 @@ from ...models import db
 from ...models.users import User
 from werkzeug.exceptions import UnprocessableEntity, InternalServerError
 from . import ns
-from ... import LOG
+from ... import APP, LOG
+import jwt
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str, location='headers', required=True)
-parser.add_argument('userid', type=str, location='headers', required=True)
+parser.add_argument('userid', type=str, location='json', required=True)
 parser.add_argument('email', type=str, location='json', required=True)
 parser.add_argument('manager', type=str, location='json', required=True)
 parser.add_argument('manageremail', type=str, location='json', required=True)
@@ -29,7 +30,7 @@ class UpdateUser(Resource):
     @ns.marshal_with(post_response_model)
     def post(self):
         args = parser.parse_args(strict=False)
-        username = args['username']
+        
         y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
         
         Email =  y['email']

@@ -35,7 +35,6 @@ class Login(Resource):
         args = parser.parse_args(strict=True)
         Email = args['email']
         password = args['password']
-        # ip = args['Ipaddress']
 
         encrypt_password = Encryption().encrypt(password)
         try:

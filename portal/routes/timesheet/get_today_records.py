@@ -50,10 +50,10 @@ class Get_today_records(Resource):
         
             Email =  y['email']
             UserId = y['userid']
-            # print(type (args['date'][0:10]),"********")
+            # print(args['date'][0:10],"********")
             token_verify_or_raise(args['Authorization'], Email, UserId )
             
-            Today_records = db.session.query(TimesheetEntry).filter(TimesheetEntry.UserId== UserId, TimesheetEntry.WeekDate.ilike("%2020-09-17%")).all()
+            Today_records = TimesheetEntry.query.filter_by(UserId = UserId).filter(TimesheetEntry.WeekDate.ilike("%" + args['date'][0:10] +"%")).all()
                             # and_ (TimesheetEntry.WeekDate.ilike("%" + args['date'][0:10] +"%"))).all()
             
             # print(Today_records,"*******")  
@@ -69,7 +69,7 @@ class Get_today_records(Resource):
                             "Description":Today_records[0].Description
                             })
                 else:
-                    for record in Week_records:
+                    for record in Today_records:
                         records.append({
                             "EntryDate":record.WeekDate,
                             "Customer":record.Customer,

@@ -51,7 +51,7 @@ class Get_week_records(Resource):
             
             token_verify_or_raise(args['Authorization'], Email, UserId )
             filter_after = datetime.today() - timedelta(days = 7)
-            Week_records = TimesheetEntry.query.filter_by(UserId= UserId).filter(TimesheetEntry.WeekDate >= filter_after).all()
+            Week_records = TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(TimesheetEntry.WeekDate >= filter_after).all()
             
             # today = date.today()    
             # weekday = today.weekday()
