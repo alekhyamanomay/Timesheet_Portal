@@ -13,10 +13,7 @@ from .. import ns
 from .... import APP, LOG
 
 parser = reqparse.RequestParser()
-parser.add_argument('request_type', type=str, location='json', required=True,
-                    help='Accepted Values: [Admin|SecurityQuestion|Email]')
-parser.add_argument('UserId', type=str, location='json', required=True)
-parser.add_argument('Email', type=str, location='json', required=False)
+parser.add_argument('email', type=str, location='json', required=False)
 
 response_model = ns.model('PostPasswordReset', {
     'result': fields.String,
@@ -32,7 +29,7 @@ def _change_password(email, UserId):
                   f'<p>Your password has been reset.</p>' + \
                   f'<p>The temporary password is: <b style="color:red">{password}</b></p>'
 
-        user = User.query.filter_by(UserId=UserId).first()
+        user = User.query.filter_by(Email=args['email']).first()
         user.Password = pass_encrypt
         db.session.commit()
 

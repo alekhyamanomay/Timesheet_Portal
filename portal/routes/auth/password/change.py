@@ -32,8 +32,6 @@ class PasswordChange(Resource):
     @ns.marshal_with(response_model)
     def post(self):
         args = parser.parse_args(strict=False)
-    
-        email = args["email"]
         old_pass = args["oldPassword"]
         new_pass = args["newPassword"]
         try:
