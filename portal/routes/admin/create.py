@@ -18,7 +18,7 @@ parser.add_argument('Authorization', type=str,
 parser.add_argument('newuser', type=str, location='json', required=True)
 parser.add_argument('newuserid', type=str, location='json', required=True)
 parser.add_argument('email', type=str, location='json', required=True)
-parser.add_argument('permission', type=str, location='json', required=True)
+# parser.add_argument('permission', type=str, location='json', required=True)
 parser.add_argument('manager', type=str, location='json', required=True)
 parser.add_argument('manageremail', type=str, location='json', required=True)
 parser.add_argument('secondarymanager', type=str, location='json', required=True)
@@ -58,7 +58,6 @@ class CreateUser(Resource):
                           Email=args['email'],
                           Status= status.STATUS_ACTIVE,
                           Role=args['role'],
-                          Permission = args['permission'],
                           Manager = args['manager'],
                           SecondaryManager = args['secondarymanager'],
                           SecondaryManagerEmail = args['secondarymanageremail'],

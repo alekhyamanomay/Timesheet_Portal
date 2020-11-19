@@ -8,7 +8,7 @@ from ....helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise,
 from ....encryption import Encryption
 from ....models import db
 from ....models.users import User
-from ....services.mail import send_email
+# from ....services.mail import send_email
 from .. import ns
 from .... import APP, LOG
 

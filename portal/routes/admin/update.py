@@ -9,6 +9,7 @@ import jwt
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str, location='headers', required=True)
+parser.add_argument('username', type=str, location='json', required=True)
 parser.add_argument('userid', type=str, location='json', required=True)
 parser.add_argument('email', type=str, location='json', required=True)
 parser.add_argument('manager', type=str, location='json', required=True)
@@ -38,10 +39,11 @@ class UpdateUser(Resource):
             
         token_verify_or_raise(args['Authorization'], Email, UserId )
         try:
-            user = User.query.filter_by(UserId=UserId).first()
+            user = User.query.filter_by(UserId=args['userid']).first()
             if user is None:
                 UnprocessableEntity("user is not Available")
             user.Email = args["email"]
+            user.UserName = args["username"]
             user.Manager = args["manager"]
             user.ManagerEmail = args["manageremail"]
             user.SecondaryManager = args['secondarymanager']

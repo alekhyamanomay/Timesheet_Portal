@@ -1,6 +1,7 @@
 
 def init_app(app):
     from .auth import login,logout
+    from .auth.password import change, reset
     from .admin import create, read, update, delete
     from .user import profile
     from . import index
