@@ -20,6 +20,7 @@ jsonschema==3.2.0
 jwcrypto==0.8
 MarkupSafe==1.1.1
 Naked==0.1.31
+openpyxl==3.0.5
 pycparser==2.20
 pycryptodome==3.9.7
 pyodbc==4.0.30
