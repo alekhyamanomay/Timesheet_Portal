@@ -1,18 +1,9 @@
-# from flask import Flask
-# import portal.models as models
-# app = Flask(__name__)
-# app.config['SQLALCEMY_TRACK_MODIFICATIONS'] = False
-# app.config['WRITE_DB'] = 'mssql+pyodbc://DESKTOP-IRHNO1M\SQLEXPRESS/TestDB?driver=SQL Server?Trusted_Connection=Yes'
-# models.init_app(app)
-# from portal.models.users import Users
-# app.app_context().push()
-# print(Users.query.all())
-from threading import Thread
-import time
 import init
-import threading
+import os
+
 from portal.models.users import User
 from portal.models.timesheetentry import TimesheetEntry
+from portal.models.remainders import Remainders
 from sqlalchemy import func
 from portal.models import db
 from portal.helpers import _SendEmail
@@ -21,7 +12,13 @@ from datetime import datetime, timedelta
 # yesterday
 yesterday = (datetime.now() + timedelta(days=-1)).date()
 print(yesterday)
-
+logs_location = os.path.join(init.app.config["LOG_DIR"],"remainder.log")
+if os.path.isfile(logs_location):
+    print(logs_location,"Size:",os.stat(logs_location).st_size)
+    if os.stat(logs_location).st_size >= 1048576:
+        print('removing repitition log')
+        os.remove(logs_location)
+f = open(logs_location, "a")
 # get all users
 users = User.query.all()
 # get timesheet data of yesterday and group by userid
@@ -45,7 +42,7 @@ tracker = []
 subject = f"Timesheet entry for {yesterday}"
 for i in userids:
     
-    print(f"heeeya,{emails[i][1]}")
+    print(f"Triggering Remainder to {emails[i][1]}")
     body = f'''<html>
             <body>
             <h1>Hi {emails[i][0]},</h1>
@@ -56,11 +53,22 @@ for i in userids:
             <p>Manomay</p>
             </body>
             </html>'''
-        
-    # if emails[i][1] == "shaik.farooq@manomay.biz":
-    #     _SendEmail([emails[i][1]],subject,body,cc=[])
-    # time.sleep(0.75)
-    result = _SendEmail(init.app,["shaik.farooq@manomay.biz"],subject,body,[])
+    f.write(f"Sending remainder to: {emails[i][1]}\n")
+    # result = _SendEmail(["shaik.farooq@manomay.biz"],subject,body,[])
+    result = "mail sent"
+    print(result)
     if result == "mail sent":
-        pass
+        print("updating remainder table")
+        f.write(f"Remainder sent successfully to {emails[i][1]}\n")
+        newentry = Remainders(
+                                UserId =i,
+                                UserName =emails[i][0],  
+                                # TriggeredDate=datetime.now().date()+ timedelta(days=-1))
+                                RemainderDate=yesterday)
+        db.session.add(newentry)
+        db.session.commit()
+    else:
+        print("some issue")
+        f.write(f"some error remainding to {emails[i][1]}, {result} \n")
         
+f.close()

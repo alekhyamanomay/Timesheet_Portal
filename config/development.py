@@ -5,6 +5,7 @@ LOG_LEVEL = logging.DEBUG
 ROOT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__),"..",".."))
 DATA_DIR = os.path.join(ROOT_DIR, 'data')
 LOG_DIR = os.path.join(DATA_DIR, 'log')
+REPORT_DIR = "C:\\Users\\Manomay\\Desktop\\Reports"
 
 SECRET_KEY = 'BT-=f~i1IlIHF(#'
 JWT_SECRET = 'R]B+=46,e=gKtI/'

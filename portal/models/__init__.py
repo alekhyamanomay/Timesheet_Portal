@@ -9,6 +9,7 @@ def init_app(app):
         try :
             from .users import User
             from .timesheetentry import TimesheetEntry
+            from .remainders import Remainders
             from .jwttokenblacklist import JWTTokenBlacklist
         except Exception as e:
             print(e)
