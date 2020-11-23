@@ -11,6 +11,10 @@ def init_app(app):
             from .timesheetentry import TimesheetEntry
             from .remainders import Remainders
             from .jwttokenblacklist import JWTTokenBlacklist
+            from .customers import Customers
+            from .projects import Projects
+            from .tasks import Tasks
+            from .subtasks import SubTasks
         except Exception as e:
             print(e)
         db.create_all()

@@ -20,8 +20,10 @@ FRONTEND_URL= 'https://www.google.com/'
 
 MAILSERVER_DOMAIN = 'smtp.gmail.com'
 MAILSERVER_PORT = 465
-MAILSERVER_USERNAME = 'unofficialfarooqsheikh@gmail.com'
-MAILSERVER_PASSWORD = 'Un0fficialfarooqsheikh'
+# MAILSERVER_USERNAME = 'unofficialfarooqsheikh@gmail.com'
+# MAILSERVER_PASSWORD = 'Un0fficialfarooqsheikh'
+MAILSERVER_USERNAME = 'manomaytesting@gmail.com'
+MAILSERVER_PASSWORD = 'Testing@1234'
 
 ENVIRONMENT = "DEVELOPMENT"
 # flask run -h 192.168.2.111 -p 9000

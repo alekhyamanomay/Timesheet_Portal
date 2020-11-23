@@ -22,7 +22,7 @@ parser.add_argument('customer', type=str, location='json', required=True)
 parser.add_argument('project', type=str, location='json', required=True)
 parser.add_argument('task', type=str, location='json', required=True)
 parser.add_argument('subtask', type=str, location='json', required=True)
-parser.add_argument('timespent', type=int, location='json', required=True)
+parser.add_argument('timespent', type=float, location='json', required=True)
 parser.add_argument('description', type=str, location='json', required=True)
 
 response_model = ns.model('create_entry', {

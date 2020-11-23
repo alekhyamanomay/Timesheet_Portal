@@ -12,7 +12,7 @@ class TimesheetEntry(db.Model):
     Project	= db.Column(db.String(50), nullable=False)	
     TaskName = db.Column(db.String(50), nullable=False)	
     SubTaskName	= db.Column(db.String(50), nullable=False)	
-    Timespent = db.Column(db.Float(3), nullable = False)
+    Timespent = db.Column(db.Float(), nullable = False)
     Description	 = db.Column(db.String(255), nullable=False)	
     EntryDatetime = db.Column(db.DateTime)
     Email	= db.Column(db.String(50), nullable=False)

@@ -20,7 +20,8 @@ response_model = ns.model('GetLogin', {
     'username':fields.String,
     'email': fields.String,
     'userid': fields.String,
-    "role": fields.String,
+    'role': fields.String,
+    'temppassword':fields.Boolean,
     'token': fields.String,
 })
 
@@ -64,13 +65,13 @@ class Login(Resource):
             token = jwt.encode(key=APP.config['JWT_SECRET'], algorithm='HS256', payload=payload )
 
             token = token.decode('utf-8')
-            # print(token)
             LOG.debug('User %s authenticated successfully', userinfo.UserName)
             return {
                 "username": userinfo.UserName,
                 "userid":userinfo.UserId,
                 "email": userinfo.Email,
                 "role": role,
+                "temppassword":userinfo.TemporaryPassword,
                 'token': str(token)
             }
 

@@ -61,7 +61,9 @@ class CreateUser(Resource):
                           Manager = args['manager'],
                           SecondaryManager = args['secondarymanager'],
                           SecondaryManagerEmail = args['secondarymanageremail'],
-                          ManagerEmail = args['manageremail']
+                          ManagerEmail = args['manageremail'],
+                          TemporaryPassword	= False
+                          
                           )
         
         # Notify the user the creation of his Account with Temporary Password

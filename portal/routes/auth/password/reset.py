@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request, abort
 from flask_restx import Resource, reqparse, cors, fields
 from werkzeug.exceptions import NotFound, BadRequest, Unauthorized, UnprocessableEntity, InternalServerError
-from ....helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise, RESPONSE_OK
+from ....helpers import randomStringwithDigitsAndSymbols, RESPONSE_OK
 from ....encryption import Encryption
 from ....models import db
 from ....models.users import User
@@ -13,27 +13,28 @@ from .. import ns
 from .... import APP, LOG
 
 parser = reqparse.RequestParser()
-parser.add_argument('email', type=str, location='json', required=False)
+parser.add_argument('Email', type=str, location='json', required=True)
 
 response_model = ns.model('PostPasswordReset', {
     'result': fields.String,
 })
 
 
-def _change_password(email, UserId):
+def _change_password(user):
     try:
+        
         password = randomStringwithDigitsAndSymbols()
         pass_encrypt = Encryption().encrypt(password)
-        message = f'<p>Dear {username}</p>' + \
-                  f'<p>Username is {username}</p>' + \
+        user.Password = pass_encrypt
+        user.TemporaryPassword = True
+        message = f'<p>Dear {user.username}</p>' + \
+                  f'<p>Username is {user.username}</p>' + \
                   f'<p>Your password has been reset.</p>' + \
                   f'<p>The temporary password is: <b style="color:red">{password}</b></p>'
 
-        user = User.query.filter_by(Email=args['email']).first()
-        user.Password = pass_encrypt
         db.session.commit()
-
-        send_email(to_address=email, subject='Reset Password', body=message)
+        send_email(to_address=Email, subject='Reset Password', body=message)
+        print("mail sent")
         return RESPONSE_OK
 
     except Exception as e:
@@ -49,19 +50,8 @@ class PasswordReset(Resource):
     @ns.expect(parser, validate=True)
     def post(self):
         args = parser.parse_args(strict=False)
-        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
-        
-        Email =  y['email']
-        UserId = y['userid']
-            
-        token_verify_or_raise(args['Authorization'], Email, UserId )
 
-        user = User.query.filter_by(UserId=args[UserId]).first()
+        user = User.query.filter_by(Email = args['Email']).first()
         if user is None:
             raise UnprocessableEntity('User not found')
-
-        if user.Email is None:
-            raise UnprocessableEntity("Please contact administrator for password reset "
-                                      "Since your EmailID is not available in the system")
-
-        return _change_password(Email, UserId)
+        return _change_password(user)

@@ -15,7 +15,6 @@ from .... import APP, LOG
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str, location='headers', required=True)
-parser.add_argument('email', type=str, location='json', required=True)
 parser.add_argument('oldPassword', type=str, location='json', required=True)
 parser.add_argument('newPassword', type=str, location='json', required=True)
 
@@ -35,6 +34,13 @@ class PasswordChange(Resource):
         old_pass = args["oldPassword"]
         new_pass = args["newPassword"]
         try:
+            y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        
+            Email =  y['email']
+            UserId = y['userid']
+            
+            token_verify_or_raise(args['Authorization'], Email, UserId )
+            
             user = User.query.filter_by(Email=email).first()
             if user is None:
                 raise UnprocessableEntity('Username is not valid')
@@ -43,6 +49,7 @@ class PasswordChange(Resource):
                 raise BadRequest('Old Password is wrong')
             new_password = Encryption().encrypt(new_pass)
             user.Password = new_password
+            user.TemporaryPassword = False
             db.session.commit()
             return {"result": "Password changed successfully"}, 200
 

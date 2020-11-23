@@ -20,6 +20,7 @@ parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
 
 response_model_child = ns.model('getweekrecords', {
+    "EntryId" : fields.Integer,
     "EntryDate": fields.String,
     "Customer": fields.String,
     "Project": fields.String,
@@ -65,6 +66,7 @@ class Get_week_records(Resource):
             if Week_records:
                 if len(Week_records) == 1:
                     records.append({
+                            "EntryId":Week_records[0].EntryID,
                             "EntryDate":Week_records[0].WeekDate,
                             "Customer":Week_records[0].Customer,
                             "Project":Week_records[0].Project,
@@ -76,6 +78,7 @@ class Get_week_records(Resource):
                 else:
                     for record in Week_records:
                         records.append({
+                            "EntryId":record.EntryID,
                             "EntryDate":record.WeekDate,
                             "Customer":record.Customer,
                             "Project":record.Project,

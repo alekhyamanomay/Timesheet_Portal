@@ -22,6 +22,7 @@ parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
 parser.add_argument('date', type=str, location='json', required=True)
 response_model_child = ns.model('gettodayrecords', {
+    "EntryId":fields.Integer,
     "EntryDate": fields.String,
     "Customer": fields.String,
     "Project": fields.String,
@@ -50,16 +51,14 @@ class Get_today_records(Resource):
         
             Email =  y['email']
             UserId = y['userid']
-            # print(args['date'][0:10],"********")
             token_verify_or_raise(args['Authorization'], Email, UserId )
             
             Today_records = TimesheetEntry.query.filter_by(UserId = UserId).filter(TimesheetEntry.WeekDate.ilike("%" + args['date'][0:10] +"%")).all()
-                            # and_ (TimesheetEntry.WeekDate.ilike("%" + args['date'][0:10] +"%"))).all()
-            
-            # print(Today_records,"*******")  
+
             if Today_records:
                 if len(Today_records) == 1:
                     records.append({
+                            "EntryId":Today_records[0].EntryID,
                             "EntryDate":Today_records[0].WeekDate,
                             "Customer":Today_records[0].Customer,
                             "Project":Today_records[0].Project,
@@ -71,6 +70,7 @@ class Get_today_records(Resource):
                 else:
                     for record in Today_records:
                         records.append({
+                            "EntryId":record.EntryID,
                             "EntryDate":record.WeekDate,
                             "Customer":record.Customer,
                             "Project":record.Project,

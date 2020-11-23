@@ -19,6 +19,7 @@ parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
 
 response_model_child = ns.model('gethistory', {
+    "EntryId":fields.Integer,
     "EntryDate": fields.String,
     "Customer": fields.String,
     "Project": fields.String,
@@ -66,6 +67,7 @@ class GetHistory(Resource):
             if Month_records:
                 if len(Month_records) == 1:
                     records.append({
+                            "EntryId":Month_records[0].EntryID,
                             "EntryDate":Month_records[0].WeekDate,
                             "Customer":Month_records[0].Customer,
                             "Project":Month_records[0].Project,
@@ -77,6 +79,7 @@ class GetHistory(Resource):
                 else:
                     for record in Month_records[:-1]:
                         records.append({
+                            "EntryId":record.EntryID,
                             "EntryDate":record.WeekDate,
                             "Customer":record.Customer,
                             "Project":record.Project,
@@ -85,7 +88,7 @@ class GetHistory(Resource):
                             "TimeSpent":record.Timespent,
                             "Description":record.Description
                             })
-            5
+            # print(records)
             return {"records": records}, 200
 
         except Exception as e:
