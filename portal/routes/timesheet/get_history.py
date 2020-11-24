@@ -25,7 +25,7 @@ response_model_child = ns.model('gethistory', {
     "Project": fields.String,
     "Task": fields.String,
     "SubTask": fields.String,
-    "TimeSpent": fields.Float,
+    "TimeSpent": fields.String,
     "Description": fields.String
 })
 
