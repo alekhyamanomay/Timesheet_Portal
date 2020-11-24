@@ -48,12 +48,19 @@ class Create_entry(Resource):
         
         entrydatetime = datetime.now()
 
-        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
-        Email =  y['email']
-        UserID = y['userid']
+        # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        # Email =  y['email']
+        # UserID = y['userid']
         
-        token_verify_or_raise(args['Authorization'], Email, UserID )
+        # token_verify_or_raise(args['Authorization'], Email, UserID )
         try:
+            y = token_decode(args['Authorization'])
+            if isinstance(y,tuple):
+                return {'error':"Unathorized token"}, 401
+
+            Email =  y['email']
+            UserId = y['userid']
+            token_verify_or_raise(args['Authorization'])
             userinfo = User.query.filter_by(Email= Email).first()
             if userinfo is None:
                 LOG.debug("Unable to find user details %s", Email)

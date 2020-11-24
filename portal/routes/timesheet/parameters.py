@@ -41,7 +41,7 @@ class Get_values(Resource):
     @ns.expect(parser, validate=True)
     # @ns.marshal_with(response_model)
     def get(self):
-
+        args = parser.parse_args(strict=True)
         task_subtask ={}
         cust_proj = {}
         all_values = {}
@@ -51,10 +51,7 @@ class Get_values(Resource):
             y = token_decode(args['Authorization'])
         
             if isinstance(y,tuple):
-                return {"error":y[0]}, y[1]
-
-            Email =  y['email']
-            UserId = y['userid']
+                return {'error':"Unathorized token"}, 401
             token_verify_or_raise(args['Authorization'])
 
             for customer in customers:

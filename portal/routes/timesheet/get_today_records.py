@@ -55,7 +55,7 @@ class Get_today_records(Resource):
             y = token_decode(args['Authorization'])
         
             if isinstance(y,tuple):
-                return {"error":y[0]}, y[1]
+                return {'error':"Unathorized token"}, 401
 
             Email =  y['email']
             UserId = y['userid']

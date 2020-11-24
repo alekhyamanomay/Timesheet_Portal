@@ -51,8 +51,8 @@ class Login(Resource):
             
             role = userinfo.Role
             # token_create = datetime.utcnow()
-            exp = datetime.utcnow() + timedelta(hours=1, minutes=30)
-
+            # exp = datetime.utcnow() + timedelta(hours=1, minutes=30)
+            exp = datetime.utcnow() + timedelta(seconds=10)
             payload = {
                 'username': userinfo.UserName,
                 'email': userinfo.Email,
