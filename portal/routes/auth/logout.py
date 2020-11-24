@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request, abort, current_app as app
 from flask_restx import Resource, reqparse
 from werkzeug.exceptions import InternalServerError
-from ...helpers import randomStringwithDigitsAndSymbols, token_verify, token_verify_or_raise
+from ...helpers import randomStringwithDigitsAndSymbols, token_decode, token_verify_or_raise
 from ...encryption import Encryption
 from ...models import db, status, roles
 from ...models.jwttokenblacklist import JWTTokenBlacklist

@@ -7,7 +7,7 @@ from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, Inter
 from ...encryption import Encryption
 from ...models.users import User
 from ...models.timesheetentry import TimesheetEntry
-from ...helpers import token_verify_or_raise
+from ...helpers import token_verify_or_raise, token_decode
 # from ...models.jwttokenblacklist import JWTTokenBlacklist
 from ...models import db
 from ...api import api
@@ -49,12 +49,19 @@ class Update_entry(Resource):
         description = args['description']
         
         try:
-            
-            y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
-            Email =  y['email']
-            UserID = y['userid']
+            y = token_decode(args['Authorization'])
+        
+            if isinstance(y,tuple):
+                return {"error":y[0]}, y[1]
 
-            token_verify_or_raise(args['Authorization'], Email, UserID )
+            Email =  y['email']
+            UserId = y['userid']
+            token_verify_or_raise(args['Authorization'])
+            # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+            # Email =  y['email']
+            # UserID = y['userid']
+
+            # token_verify_or_raise(args['Authorization'], Email, UserID )
             userinfo = User.query.filter_by(Email= Email).first()
             if userinfo is None:
                 LOG.debug("Unable to find user details %s", Email)

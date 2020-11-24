@@ -8,7 +8,7 @@ from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, Inter
 from ...encryption import Encryption
 from ...models.users import User
 from ...models.timesheetentry import TimesheetEntry
-from ...helpers import token_verify_or_raise
+from ...helpers import token_verify_or_raise, token_decode
 from ...models import db
 from ...api import api
 from . import ns
@@ -43,12 +43,22 @@ class GetHistory(Resource):
         records = []
         args = parser.parse_args(strict=True)
         try:
-            y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
-        
+            y = token_decode(args['Authorization'])
+            
+            if isinstance(y,tuple):
+                return {"error":y[0]}, y[1]
+
             Email =  y['email']
             UserId = y['userid']
+
+            token_verify_or_raise(args['Authorization'])
+
+            # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        
+            # Email =  y['email']
+            # UserId = y['userid']
             
-            token_verify_or_raise(args['Authorization'], Email, UserId )
+            # token_verify_or_raise(args['Authorization'], Email, UserId )
             Recent_records = TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.EntryDatetime.desc()).all()[:5]
             
             if Recent_records:
@@ -65,7 +75,6 @@ class GetHistory(Resource):
                             })
                 else:
                     for record in Recent_records:
-                        print(record.Timespent,type(record.Timespent),"**************")
                         records.append({
                             "EntryId":record.EntryID,
                             "EntryDate":record.WeekDate,
@@ -76,7 +85,7 @@ class GetHistory(Resource):
                             "TimeSpent":record.Timespent,
                             "Description":record.Description
                             })
-            print(records)
+            # print(records)
             
             return {"records": records}, 200
 

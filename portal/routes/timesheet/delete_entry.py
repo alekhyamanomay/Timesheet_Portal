@@ -6,7 +6,7 @@ from flask_restx import Resource, reqparse, fields, inputs
 from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, InternalServerError
 from ...encryption import Encryption
 from ...models.users import User
-from ...helpers import token_verify_or_raise
+from ...helpers import token_verify_or_raise, token_decode
 from ...models.timesheetentry import TimesheetEntry
 # from ...models.jwttokenblacklist import JWTTokenBlacklist
 from ...models import status, db
@@ -33,11 +33,19 @@ class Delete_entry(Resource):
         args = parser.parse_args(strict=True)
         
         try:
-            y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
-            Email =  y['email']
-            UserID = y['userid']
+            # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+            # Email =  y['email']
+            # UserID = y['userid']
 
-            token_verify_or_raise(args['Authorization'], Email, UserID )
+            # token_verify_or_raise(args['Authorization'], Email, UserID )
+            y = token_decode(args['Authorization'])
+        
+            if isinstance(y,tuple):
+                return {"error":y[0]}, y[1]
+
+            Email =  y['email']
+            UserId = y['userid']
+            token_verify_or_raise(args['Authorization'])
 
             userinfo = User.query.filter_by(Email= Email).first()
             if userinfo is None:

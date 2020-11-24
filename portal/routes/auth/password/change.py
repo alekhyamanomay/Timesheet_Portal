@@ -6,7 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from flask import Blueprint, jsonify, request, abort, current_app as app
 from flask_restx import Resource, reqparse, cors, fields
 from werkzeug.exceptions import NotFound, BadRequest, Unauthorized, UnprocessableEntity, InternalServerError
-from ....helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise
+from ....helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise, token_decode
 from ....encryption import Encryption
 from ....models import db
 from ....models.users import User
@@ -34,12 +34,14 @@ class PasswordChange(Resource):
         old_pass = args["oldPassword"]
         new_pass = args["newPassword"]
         try:
-            y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
-        
+            y = token_decode(args['Authorization'])
+            if isinstance(y,tuple):
+                return {"error":y[0]}, y[1]
+
             Email =  y['email']
             UserId = y['userid']
-            
-            token_verify_or_raise(args['Authorization'], Email, UserId )
+            token_verify_or_raise(args['Authorization'])
+            # token_verify_or_raise(args['Authorization'], Email, UserId )
             
             user = User.query.filter_by(Email= Email).first()
             if user is None:
@@ -54,5 +56,5 @@ class PasswordChange(Resource):
             return {"result": "Password changed successfully"}, 200
 
         except KeyError as e:
-            print(e)
+    
             raise InternalServerError()

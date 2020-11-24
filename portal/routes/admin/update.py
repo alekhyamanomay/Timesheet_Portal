@@ -1,5 +1,5 @@
 from flask_restx import Resource, reqparse, fields
-from ...helpers import token_verify_or_raise
+from ...helpers import token_verify_or_raise, token_decode
 from ...models import db
 from ...models.users import User
 from werkzeug.exceptions import UnprocessableEntity, InternalServerError
@@ -32,12 +32,20 @@ class UpdateUser(Resource):
     def post(self):
         args = parser.parse_args(strict=False)
         
-        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        y = token_decode(args['Authorization'])
         
+        if isinstance(y,tuple):
+            return {"error":y[0]}, y[1]
+
         Email =  y['email']
         UserId = y['userid']
+        token_verify_or_raise(args['Authorization'])
+        # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        
+        # Email =  y['email']
+        # UserId = y['userid']
             
-        token_verify_or_raise(args['Authorization'], Email, UserId )
+        # token_verify_or_raise(args['Authorization'], Email, UserId )
         try:
             user = User.query.filter_by(UserId=args['userid']).first()
             if user is None:

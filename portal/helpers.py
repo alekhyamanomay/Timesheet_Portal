@@ -41,36 +41,33 @@ def converter(o):
 
 
 
-def token_verify_or_raise(token, email ,userid):
-    decoded_token = token_verify(token, email ,userid)
-    if decoded_token is None:
-        raise Unauthorized()
-
+def token_verify_or_raise(token):
+    # decoded_token = token_verify(token)
+    
     tokens = JWTTokenBlacklist.query.filter_by(JWTToken=token).scalar()
     if tokens is not None:
         raise Unauthorized()
 
-    return decoded_token
+    return "decoded"
 
 
-def token_verify(token, email ,userid):
-    decoded = None
+def token_decode(token):
 
     try:
         decoded = jwt.decode(token, key=app.config['JWT_SECRET'])
-        if decoded["userid"] != userid or decoded["email"] != email:
-            decoded = None
-
+        if decoded is None:
+            raise Unauthorized()
+    
     except jwt.DecodeError as e:
-        print("decode error", e)
+        return {"error":e}, 401
 
-    except jwt.ExpiredSignatureError:
-        print("sign")
-    except KeyError:
-        decoded = None
-        print("key error")
+    except jwt.ExpiredSignatureError as e:
+        return {"error":e}, 402
+        
+    except Exception as e:
+        return {"error":e}, 401
+
     return decoded
-
 
 
 def randomStringwithDigitsAndSymbols(stringLength=10):

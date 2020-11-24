@@ -34,8 +34,8 @@ def _change_password(user):
                   f'<p>The temporary password is: <b style="color:red">{password}</b></p>'
 
         db.session.commit()
-        cc= ""
-        _SendEmail(body=message,subject='Reset Password',cc=cc,to_address=user.Email)
+        cc= []
+        _SendEmail(body=message,subject='Reset Password',cc=cc,to_address=[user.Email])
         # send_email(to_address=Email, subject='Reset Password', body=message)
         print("mail sent")
         return RESPONSE_OK

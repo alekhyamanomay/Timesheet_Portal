@@ -3,7 +3,7 @@ from werkzeug.exceptions import Unauthorized, UnprocessableEntity
 
 from ... import APP, LOG
 from ...encryption import Encryption
-from ...helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise
+from ...helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise, token_decode
 from ...models import db,status
 from ...models.users import User
 from . import ns
@@ -30,12 +30,20 @@ class DeleteUser(Resource):
     @ns.marshal_with(response_model)
     def post(self):
         args = parser.parse_args(strict=False)
-        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        y = token_decode(args['Authorization'])
         
+        if isinstance(y,tuple):
+            return {"error":y[0]}, y[1]
+
         Email =  y['email']
         UserId = y['userid']
+        token_verify_or_raise(args['Authorization'])
+        # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        
+        # Email =  y['email']
+        # UserId = y['userid']
             
-        token_verify_or_raise(args['Authorization'], Email, UserId )
+        # token_verify_or_raise(args['Authorization'], Email, UserId )
         user = User.query.filter_by(UserId=args['userid']).first()
         if user is not None:
             UnprocessableEntity("User not found")

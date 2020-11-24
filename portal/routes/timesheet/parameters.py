@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from flask import request
 from flask_restx import Resource, reqparse, fields, inputs
 from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, InternalServerError
-from ...helpers import token_verify_or_raise
+from ...helpers import token_verify_or_raise, token_decode
 from ...encryption import Encryption
 from ...models.customers import Customers
 from ...models.projects import Projects
@@ -48,6 +48,15 @@ class Get_values(Resource):
         customers = Customers.query.all()
         tasks = Tasks.query.all()
         try:
+            y = token_decode(args['Authorization'])
+        
+            if isinstance(y,tuple):
+                return {"error":y[0]}, y[1]
+
+            Email =  y['email']
+            UserId = y['userid']
+            token_verify_or_raise(args['Authorization'])
+
             for customer in customers:
                 proj_values = Projects.query.filter_by(CustomerId=customer.CustomerId).all()
                 cust_proj[customer.CustomerName] = [str(p) for p in proj_values]

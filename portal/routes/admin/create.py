@@ -1,10 +1,9 @@
 # from http.client import CREATED
 from flask_restx import Resource, cors, fields, reqparse
 from werkzeug.exceptions import Unauthorized, UnprocessableEntity
-
 from ... import APP, LOG
 from ...encryption import Encryption
-from ...helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise, _SendEmail
+from ...helpers import randomStringwithDigitsAndSymbols, token_verify_or_raise, _SendEmail, token_decode
 from ...models import db,status
 from ...models.users import User
 from . import ns
@@ -18,7 +17,6 @@ parser.add_argument('Authorization', type=str,
 parser.add_argument('newuser', type=str, location='json', required=True)
 parser.add_argument('newuserid', type=str, location='json', required=True)
 parser.add_argument('email', type=str, location='json', required=True)
-# parser.add_argument('permission', type=str, location='json', required=True)
 parser.add_argument('manager', type=str, location='json', required=True)
 parser.add_argument('manageremail', type=str, location='json', required=True)
 parser.add_argument('secondarymanager', type=str, location='json', required=True)
@@ -40,12 +38,20 @@ class CreateUser(Resource):
     def post(self):
         
         args = parser.parse_args(strict=False)
-        y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        y = token_decode(args['Authorization'])
         
+        if isinstance(y,tuple):
+            return {"error":y[0]}, y[1]
+
         Email =  y['email']
         UserId = y['userid']
+        token_verify_or_raise(args['Authorization'])
+        # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+        
+        # Email =  y['email']
+        # UserId = y['userid']
             
-        token_verify_or_raise(args['Authorization'], Email, UserId )
+        # token_verify_or_raise(args['Authorization'], Email, UserId )
         
         user = User.query.filter_by(Email=args["email"]).first()
         if user is not None:

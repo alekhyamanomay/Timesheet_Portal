@@ -8,7 +8,7 @@ from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, Inter
 from ...encryption import Encryption
 from ...models.users import User
 from ...models.timesheetentry import TimesheetEntry
-from ...helpers import token_verify_or_raise
+from ...helpers import token_verify_or_raise, token_decode
 # from ...models.jwttokenblacklist import JWTTokenBlacklist
 from ...models import status, roles
 from ...api import api
@@ -45,15 +45,23 @@ class Get_week_records(Resource):
         args = parser.parse_args(strict=True)
         
         try:
-            y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+            # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
         
-            Email =  y['email']
-            UserId = y['userid']
+            # Email =  y['email']
+            # UserId = y['userid']
             
-            token_verify_or_raise(args['Authorization'], Email, UserId )
+            # token_verify_or_raise(args['Authorization'], Email, UserId )
             # filter_after = datetime.today() - timedelta(days = 7)
             # Week_records = TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(TimesheetEntry.WeekDate >= filter_after).all()
-            
+            y = token_decode(args['Authorization'])
+        
+            if isinstance(y,tuple):
+                return {"error":y[0]}, y[1]
+
+            Email =  y['email']
+            UserId = y['userid']
+            token_verify_or_raise(args['Authorization'])
+
             today = date.today()    
             weekday = today.weekday()
             mon = today - timedelta(days=weekday)

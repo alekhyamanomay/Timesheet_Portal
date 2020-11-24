@@ -8,7 +8,7 @@ from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, Inter
 from ...encryption import Encryption
 from ...models.users import User
 from ...models.timesheetentry import TimesheetEntry  
-from ...helpers import token_verify_or_raise                                                            
+from ...helpers import token_verify_or_raise, token_decode                                                           
 # from ...models.jwttokenblacklist import JWTTokenBlacklist
 from ...models import db
 from sqlalchemy import and_
@@ -47,12 +47,20 @@ class Get_today_records(Resource):
         args = parser.parse_args(strict=True)
         
         try:
-            y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
+            # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
         
+            # Email =  y['email']
+            # UserId = y['userid']
+            # token_verify_or_raise(args['Authorization'], Email, UserId )
+            y = token_decode(args['Authorization'])
+        
+            if isinstance(y,tuple):
+                return {"error":y[0]}, y[1]
+
             Email =  y['email']
             UserId = y['userid']
-            token_verify_or_raise(args['Authorization'], Email, UserId )
-            
+            token_verify_or_raise(args['Authorization'])
+
             Today_records = TimesheetEntry.query.filter_by(UserId = UserId).filter(TimesheetEntry.WeekDate.ilike("%" + args['date'][0:10] +"%")).all()
 
             if Today_records:
