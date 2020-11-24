@@ -7,7 +7,7 @@ from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, Inter
 from ...helpers import token_verify_or_raise
 from ...encryption import Encryption
 from ...models.customers import Customers
-from ...models.projects import projects
+from ...models.projects import Projects
 from ...models.tasks import Tasks
 from ...models.subtasks import SubTasks
 from ...models import db
@@ -35,22 +35,30 @@ parser.add_argument('Authorization', type=str,
 # })
 
 @ns.route('/get_values')
-class Get_week_records(Resource):
+class Get_values(Resource):
     @ns.doc(description='Get_values',
             responses={200: 'OK', 400: 'Bad Request', 401: 'Unauthorized', 500: 'Internal Server Error'})
     @ns.expect(parser, validate=True)
-    @ns.marshal_with(response_model)
+    # @ns.marshal_with(response_model)
     def get(self):
 
         task_subtask ={}
         cust_proj = {}
+        all_values = {}
         customers = Customers.query.all()
-        for customer in customers:
-            cust_proj[customer.CustomerId]= Projects.query.filter_by(CustomerId=customer.CustomerId).all()
-            # projects = Projects.query.filter_by(CustomerId=customer.CustomerId).all()
-        
         tasks = Tasks.query.all()
-        for task in tasks:
-            task_subtask[task.TaskId] = SubTasks.query.filter_by(TaskId = task.TaskId).all()
+        try:
+            for customer in customers:
+                proj_values = Projects.query.filter_by(CustomerId=customer.CustomerId).all()
+                cust_proj[customer.CustomerName] = [str(p) for p in proj_values]
+            
+            for task in tasks:
+                subtasks_values = SubTasks.query.filter_by(TaskId = task.TaskId).all()
+                task_subtask[task.TaskName] = [str(s) for s in subtasks_values]
 
-        return cust_proj,task_subtask
+            all_values['customer_project'] = cust_proj
+            all_values['task_subtask'] = task_subtask
+            
+            return {"result": all_values}, 200
+        except Exception as e:
+            print(e)

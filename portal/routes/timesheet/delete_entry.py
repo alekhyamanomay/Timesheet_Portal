@@ -6,6 +6,7 @@ from flask_restx import Resource, reqparse, fields, inputs
 from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, InternalServerError
 from ...encryption import Encryption
 from ...models.users import User
+from ...helpers import token_verify_or_raise
 from ...models.timesheetentry import TimesheetEntry
 # from ...models.jwttokenblacklist import JWTTokenBlacklist
 from ...models import status, db
@@ -16,7 +17,7 @@ from ... import APP, LOG
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
-parser.add_argument('entryid', type=str, location='headers', required=True)
+parser.add_argument('entryid', type=str, location='json', required=True)
 
 response_model = ns.model('Delete_entry', {
     'result': fields.String,    
@@ -43,7 +44,7 @@ class Delete_entry(Resource):
                 LOG.debug("Unable to find user details %s", Email)
                 raise UnprocessableEntity('Unable to find user details')
 
-            entry = TimesheetEntry.query.filter_by(EntryId = args['entryid']).first()
+            entry = TimesheetEntry.query.filter_by(EntryID = args['entryid']).first()
                           
             db.session.delete(entry)
             db.session.commit()

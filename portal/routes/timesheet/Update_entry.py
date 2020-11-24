@@ -7,6 +7,7 @@ from werkzeug.exceptions import NotFound, BadRequest, UnprocessableEntity, Inter
 from ...encryption import Encryption
 from ...models.users import User
 from ...models.timesheetentry import TimesheetEntry
+from ...helpers import token_verify_or_raise
 # from ...models.jwttokenblacklist import JWTTokenBlacklist
 from ...models import db
 from ...api import api
@@ -14,12 +15,15 @@ from . import ns
 from ... import APP, LOG
 
 parser = reqparse.RequestParser()
-parser.add_argument('date', type=inputs.date_from_iso8601, location='headers', required=False)
+parser.add_argument('Authorization', type=str,
+                    location='headers', required=True)
+parser.add_argument('entryid', type=str, location='json', required=True)
+parser.add_argument('date', type=inputs.date_from_iso8601, location='json', required=False)
 parser.add_argument('customer', type=str, location='json', required=True)
 parser.add_argument('project', type=str, location='json', required=True)
 parser.add_argument('task', type=str, location='json', required=True)
 parser.add_argument('subtask', type=str, location='json', required=True)
-parser.add_argument('timespent', type=int, location='json', required=True)
+parser.add_argument('timespent', type=float, location='json', required=True)
 parser.add_argument('description', type=str, location='json', required=True)
 
 response_model = ns.model('update_entry', {
@@ -55,14 +59,14 @@ class Update_entry(Resource):
             if userinfo is None:
                 LOG.debug("Unable to find user details %s", Email)
                 raise UnprocessableEntity('Unable to find user details')
-            entry = TimesheetEntry.query.filter_by(EntryId = args['entryid']).first()
-            entry.WeekDate = date,
-            entry.Customer = customer,
-            entry.Project = project,
-            entry.Task = task, 
-            entry.Subtask= subtask, 
-            entry.timespent = timespent, 
-            entry.description= description
+            entry = TimesheetEntry.query.filter_by(EntryID = args['entryid']).first()
+            entry.WeekDate = Date
+            entry.Customer = Customer
+            entry.Project = Project
+            entry.Task = Task
+            entry.Subtask= Subtask
+            entry.Timespent = timespent
+            entry.Description= description
                     
             db.session.commit()
             return {"result":"success"}

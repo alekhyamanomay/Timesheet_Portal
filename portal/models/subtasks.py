@@ -10,4 +10,4 @@ class SubTasks(db.Model):
     		
 
     def __repr__(self):
-        return f"SubTasks('{self.SubtaskId}')"
+        return f"{self.SubtaskName}"

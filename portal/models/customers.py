@@ -9,4 +9,4 @@ class Customers(db.Model):
     projects = db.relationship('Projects', backref='customers', uselist=True)		
 
     def __repr__(self):
-        return f"Customers('{self.CustomerId}')"
+        return f"Customers('{self.CustomerName}')"

@@ -9,4 +9,4 @@ class Tasks(db.Model):
     subtasks = db.relationship('SubTasks', backref='tasks', lazy=True)		
 
     def __repr__(self):
-        return f"Tasks('{self.TaskId}')"
+        return f"Tasks('{self.TaskName}')"

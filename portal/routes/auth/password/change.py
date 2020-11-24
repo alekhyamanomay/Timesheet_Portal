@@ -41,7 +41,7 @@ class PasswordChange(Resource):
             
             token_verify_or_raise(args['Authorization'], Email, UserId )
             
-            user = User.query.filter_by(Email=email).first()
+            user = User.query.filter_by(Email= Email).first()
             if user is None:
                 raise UnprocessableEntity('Username is not valid')
 

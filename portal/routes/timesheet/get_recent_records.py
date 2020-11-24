@@ -25,7 +25,7 @@ response_model_child = ns.model('getrecententries', {
     "Project": fields.String,
     "Task": fields.String,
     "SubTask": fields.String,
-    "TimeSpent": fields.Float,
+    "TimeSpent": fields.String,
     "Description": fields.String
 })
 
@@ -49,7 +49,7 @@ class GetHistory(Resource):
             UserId = y['userid']
             
             token_verify_or_raise(args['Authorization'], Email, UserId )
-            Recent_records = TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).all()[:5]
+            Recent_records = TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.EntryDatetime.desc()).all()[:5]
             
             if Recent_records:
                 if len(Recent_records) == 1:

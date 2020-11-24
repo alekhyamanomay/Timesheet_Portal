@@ -14,7 +14,7 @@ class TimesheetEntry(db.Model):
     SubTaskName	= db.Column(db.String(50), nullable=False)	
     Timespent = db.Column(db.Float(), nullable = False)
     Description	 = db.Column(db.String(255), nullable=False)	
-    EntryDatetime = db.Column(db.DateTime)
+    EntryDatetime = db.Column(db.DateTime, nullable = False)
     Email	= db.Column(db.String(50), nullable=False)
     Manager =  db.Column(db.String(50), nullable=True)			
 

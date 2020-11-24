@@ -10,4 +10,4 @@ class Projects(db.Model):
     		
 
     def __repr__(self):
-        return f"Projects('{self.ProjectId}')"
+        return f"{self.ProjectName}"

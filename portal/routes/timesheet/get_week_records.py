@@ -51,16 +51,16 @@ class Get_week_records(Resource):
             UserId = y['userid']
             
             token_verify_or_raise(args['Authorization'], Email, UserId )
-            filter_after = datetime.today() - timedelta(days = 7)
-            Week_records = TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(TimesheetEntry.WeekDate >= filter_after).all()
+            # filter_after = datetime.today() - timedelta(days = 7)
+            # Week_records = TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(TimesheetEntry.WeekDate >= filter_after).all()
             
-            # today = date.today()    
-            # weekday = today.weekday()
-            # mon = today - timedelta(days=weekday)
-            # # upper bound
-            # sun = today + timedelta(days=(6 - weekday))
-            # # print(today,mon,sun)
-            # Week_records = TimesheetEntry.query(TimesheetEntry).filter(UserId = UserId).filter(TimesheetEntry.WeekDate.between(mon,sun))
+            today = date.today()    
+            weekday = today.weekday()
+            mon = today - timedelta(days=weekday)
+            # upper bound
+            sun = today + timedelta(days=(6 - weekday))
+            # print(today,mon,sun)
+            Week_records = TimesheetEntry.query.filter_by(UserId = UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(TimesheetEntry.WeekDate.between(mon,sun)).all()
             
             # print(Week_records,"*********************")
             if Week_records:
