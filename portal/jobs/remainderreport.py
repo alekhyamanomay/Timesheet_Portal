@@ -5,8 +5,8 @@ import init
 from portal.models.remainders import Remainders
 from datetime import datetime, timedelta
 from portal.models import db
-fromdate = datetime.now().date() + timedelta(days= -7)
-todate = datetime.now().date()
+fromdate = (datetime.now().date() + timedelta(days= -7)).strftime("%d-%m-%Y")
+todate = datetime.now().date().strftime("%d-%m-%Y")
 
 print(fromdate,todate)
 

@@ -3,3 +3,4 @@
 .vscode/settings.json
 portal/__pycache__/__init__.cpython-38.pyc
 *.pyc
+data/log/remainder.log
