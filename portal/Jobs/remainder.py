@@ -19,6 +19,12 @@ if os.path.isfile(logs_location):
         print('removing repitition log')
         os.remove(logs_location)
 f = open(logs_location, "a")
+# if yesterday this function was ran no need to run it again
+if Remainders.query.filter_by(RemainderDate = yesterday).first():
+    f.write(f'Remainder Ran {yesterday.strftime("%d-%m-%Y")} not need to run again \n')
+    f.write(f'exiting...\n')
+    f.close()
+    exit()
 # get all users
 users = User.query.all()
 # get timesheet data of yesterday and group by userid
