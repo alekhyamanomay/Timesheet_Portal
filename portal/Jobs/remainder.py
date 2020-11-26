@@ -34,19 +34,19 @@ for i in users:
 # print(userids)
 # print(emails)
 for i in timesheetdata:
-    if not(i[1] < 2 and i[2] < 2):
+    if not(i[1] < 2):
         userids.remove(i[0])
 print(userids)
 print(timesheetdata)
 tracker = []
-subject = f"Timesheet entry for {yesterday}"
+subject = f'Timesheet entry for {yesterday.strftime("%d-%m-%Y")}--Testing'
 for i in userids:
     
     print(f"Triggering Remainder to {emails[i][1]}")
     body = f'''<html>
             <body>
-            <h1>Hi {emails[i][0]},</h1>
-            <p>There are none or minimal entries recorded against your timesheet for {yesterday} </p>
+            <h3>Hi {emails[i][0]},</h3>
+            <p>There are none or minimal entries recorded against your timesheet for {yesterday.strftime("%d-%m-%Y")} </p>
             <p>Please log on to the application and complete the TS entry immediately</p>
             <p>Please reach out to Sirisha in case of any issues</p>
             <p>Thanks,</p>
@@ -54,7 +54,8 @@ for i in userids:
             </body>
             </html>'''
     f.write(f"Sending remainder to: {emails[i][1]}\n")
-    # result = _SendEmail(["shaik.farooq@manomay.biz"],subject,body,[])
+    # emails[i.UserId] = [i.UserName, i.Email, i.ManagerEmail, i.SecondaryManagerEmail]
+    # result = _SendEmail([emails[i][1]],subject,body,[emails[i][2],emails[i][3]])
     result = "mail sent"
     print(result)
     if result == "mail sent":
