@@ -21,7 +21,9 @@ class Logout(Resource):
     @ns.expect(parser, validate=True)
     def get(self):
         args = parser.parse_args(strict=False)
-
+        token = JWTTokenBlacklist.query.filter_by(JWTToken=args["Authorization"]).first()
+        if token:
+            return {"message":"user alread logged out"}, 200
         blacklist = JWTTokenBlacklist(JWTToken=args["Authorization"],
                                       LoggedOutTime=datetime.utcnow())
         try:

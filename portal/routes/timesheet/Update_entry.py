@@ -57,11 +57,7 @@ class Update_entry(Resource):
             Email =  y['email']
             UserId = y['userid']
             token_verify_or_raise(args['Authorization'])
-            # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
-            # Email =  y['email']
-            # UserID = y['userid']
-
-            # token_verify_or_raise(args['Authorization'], Email, UserID )
+            
             userinfo = User.query.filter_by(Email= Email).first()
             if userinfo is None:
                 LOG.debug("Unable to find user details %s", Email)
@@ -70,11 +66,11 @@ class Update_entry(Resource):
             entry.WeekDate = Date
             entry.Customer = Customer
             entry.Project = Project
-            entry.Task = Task
-            entry.Subtask= Subtask
+            entry.TaskName = Task
+            entry.SubtaskName = Subtask
             entry.Timespent = timespent
             entry.Description= description
-                    
+            
             db.session.commit()
             return {"result":"success"}
 
