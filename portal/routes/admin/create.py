@@ -46,21 +46,16 @@ class CreateUser(Resource):
         Email =  y['email']
         UserId = y['userid']
         token_verify_or_raise(args['Authorization'])
-        # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
-        
-        # Email =  y['email']
-        # UserId = y['userid']
-            
-        # token_verify_or_raise(args['Authorization'], Email, UserId )
         
         user = User.query.filter_by(Email=args["email"]).first()
         if user is not None:
             return {"result": "failure", "error": "user exists with this email"}, 400
-        Password = args['newuserid']
-        enc_pass = Encryption().encrypt(Password)
+        password = randomStringwithDigitsAndSymbols()
+        pass_encrypt = Encryption().encrypt(password)
+        
         usermodel = User(UserName=args['newuser'],
                           UserId = args['newuserid'],
-                          Password=enc_pass,
+                          Password=pass_encrypt,
                           Email=args['email'],
                           Status= status.STATUS_ACTIVE,
                           Role=args['role'],
@@ -68,15 +63,14 @@ class CreateUser(Resource):
                           SecondaryManager = args['secondarymanager'],
                           SecondaryManagerEmail = args['secondarymanageremail'],
                           ManagerEmail = args['manageremail'],
-                          TemporaryPassword	= False
-                          
-                          )
+                          TemporaryPassword	= True
+                        )
         
         # Notify the user the creation of his Account with Temporary Password
         subject = f"Welcome {args['newuser']}"
-        body = f'''<H1>Hello {args['newuser']} Welcome To EASY LIFE</H1>
-                    <p>Your Account is Created, with the following credentials</p>
-                    <p>User Name : {args['newuser']}</p>
+        body = f'''<H1>Hi {args['newuser']} Welcome To Ts portal</H1>
+                    <p>Your Account has been Created, with the following credentials</p>
+                    <p>User Name : {args['email']}</p>
                     <p>Password : {Password}</p>
                     <p>Please Click on this <a href={APP.config["FRONTEND_URL"]}>link</a> or  copy paste this {APP.config["FRONTEND_URL"]}</p>
                 '''
