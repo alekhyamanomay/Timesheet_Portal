@@ -42,7 +42,8 @@ class UpdateUser(Resource):
         token_verify_or_raise(args['Authorization'])
         
         try:
-            if UserId == args['userid']:
+            
+            if str(UserId) == str(args['userid']):
                 return {'result':'failure','error':"Admin can't update his own details"}, 400
             user = User.query.filter_by(UserId=args['userid']).first()
             if user is None:

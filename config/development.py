@@ -16,14 +16,14 @@ SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://DESKTOP-RMVRFH6/Timesheetprod?driver=S
 # SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://Manomay1:Manomay@9@DESKTOP-IRHNO1M\SQLEXPRESS/TimeSheet?driver=SQL Server?Trusted_Connection=No'
 DEFAULT_PASSWORD= 'tZ4Olwg7n7od6J9lqmtTpw=='
 
-FRONTEND_URL= 'http://192.168.2.230:4200'
+FRONTEND_URL= 'http://192.168.2.162:4200'
 
 MAILSERVER_DOMAIN = 'smtp.gmail.com'
 MAILSERVER_PORT = 465
 # MAILSERVER_USERNAME = 'unofficialfarooqsheikh@gmail.com'
 # MAILSERVER_PASSWORD = 'Un0fficialfarooqsheikh'
-MAILSERVER_USERNAME = 'manomaytesting@gmail.com'
-MAILSERVER_PASSWORD = 'Testing@123'
+MAILSERVER_USERNAME = 'ts.app@manomay.biz'
+MAILSERVER_PASSWORD = 'Man0may@mts!!'
 
 ENVIRONMENT = "DEVELOPMENT"
 # flask run -h 192.168.2.111 -p 9000
