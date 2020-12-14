@@ -28,9 +28,9 @@ def _change_password(user):
         user.Password = pass_encrypt
         user.TemporaryPassword = True
         message = f'<p>Dear {user.UserName}</p>' + \
-                  f'<p>Your password has been reset.</p>' + \
                   f'<p>Please use this below temporary password to login. <p>'+\
                   f'<p>Password: <b style="color:red">{password}</b></p>'
+                  
 
         db.session.commit()
         cc= []

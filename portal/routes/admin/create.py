@@ -68,7 +68,7 @@ class CreateUser(Resource):
             
             # Notify the user the creation of his Account with Temporary Password
             subject = f"Welcome {args['newuser']}"
-            body = f'''<H1>Hi {args['newuser']} Welcome To Ts portal</H1>
+            body = f'''<p>Hi {args['newuser']} Welcome To Ts portal</p>
                         <p>Your Account has been Created, with the following credentials</p>
                         <p>User Name : {args['email']}</p>
                         <p>Password : {password}</p>
