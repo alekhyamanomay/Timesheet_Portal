@@ -5,8 +5,8 @@ import init
 from portal.models.remainders import Remainders
 from datetime import datetime, timedelta
 from portal.models import db
-fromdate = (datetime.now().date() + timedelta(days= -7)).strftime("%d-%m-%Y")
-todate = datetime.now().date().strftime("%d-%m-%Y")
+fromdate = (datetime.now().date() + timedelta(days= -7))
+todate = datetime.now().date()
 
 print(fromdate,todate)
 
@@ -14,7 +14,7 @@ print(fromdate,todate)
 query = db.session.query(Remainders.UserId,Remainders.UserName, db.func.count(Remainders.UserId)).filter(Remainders.RemainderDate >= fromdate,Remainders.RemainderDate <= todate).group_by(Remainders.UserId,Remainders.UserName).all()
 print(query)
 
-datestring = str(fromdate) +"_TO_"+str(todate)
+datestring = str(fromdate.strftime("%d-%m-%Y")) +"_TO_"+str(todate.strftime("%d-%m-%Y"))
 filename = f"Remainder_Report_{datestring}.xlsx"
 file_path = os.path.abspath(os.path.join(init.app.config['ROOT_DIR'],"portal","jobs","Templates","RemainderReport.xlsx"))
 save_path = os.path.abspath(os.path.join(init.app.config['REPORT_DIR'],"RemainderReports",filename))
