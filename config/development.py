@@ -22,8 +22,8 @@ MAILSERVER_DOMAIN = 'smtp.gmail.com'
 MAILSERVER_PORT = 465
 # MAILSERVER_USERNAME = 'unofficialfarooqsheikh@gmail.com'
 # MAILSERVER_PASSWORD = 'Un0fficialfarooqsheikh'
-MAILSERVER_USERNAME = 'manomaytesting@gmail.com'
-MAILSERVER_PASSWORD = 'Testing@123'
+MAILSERVER_USERNAME = 'ts.app@manomay.biz'
+MAILSERVER_PASSWORD = 'Man0may@mts!!'
 
 ENVIRONMENT = "DEVELOPMENT"
 # flask run -h 192.168.2.111 -p 9000
