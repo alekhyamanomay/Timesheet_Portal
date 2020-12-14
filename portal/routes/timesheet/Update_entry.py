@@ -18,7 +18,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
 parser.add_argument('entryid', type=str, location='json', required=True)
-parser.add_argument('date', type=inputs.date_from_iso8601, location='json', required=False)
+parser.add_argument('date', type=str, location='json', required=False)
 parser.add_argument('customer', type=str, location='json', required=True)
 parser.add_argument('project', type=str, location='json', required=True)
 parser.add_argument('task', type=str, location='json', required=True)

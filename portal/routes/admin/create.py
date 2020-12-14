@@ -43,48 +43,51 @@ class CreateUser(Resource):
         if isinstance(y,tuple):
             return {'message':"Unathorized token"}, 401
 
-        Email =  y['email']
-        UserId = y['userid']
+        # Email =  y['email']
+        # UserId = y['userid']
         token_verify_or_raise(args['Authorization'])
-        
-        user = User.query.filter_by(Email=args["email"]).first()
-        if user is not None:
-            return {"result": "failure", "error": "user exists with this email"}, 400
-        password = randomStringwithDigitsAndSymbols()
-        pass_encrypt = Encryption().encrypt(password)
-        
-        usermodel = User(UserName=args['newuser'],
-                          UserId = args['newuserid'],
-                          Password=pass_encrypt,
-                          Email=args['email'],
-                          Status= status.STATUS_ACTIVE,
-                          Role=args['role'],
-                          Manager = args['manager'],
-                          SecondaryManager = args['secondarymanager'],
-                          SecondaryManagerEmail = args['secondarymanageremail'],
-                          ManagerEmail = args['manageremail'],
-                          TemporaryPassword	= True
-                        )
-        
-        # Notify the user the creation of his Account with Temporary Password
-        subject = f"Welcome {args['newuser']}"
-        body = f'''<H1>Hi {args['newuser']} Welcome To Ts portal</H1>
-                    <p>Your Account has been Created, with the following credentials</p>
-                    <p>User Name : {args['email']}</p>
-                    <p>Password : {Password}</p>
-                    <p>Please Click on this <a href={APP.config["FRONTEND_URL"]}>link</a> or  copy paste this {APP.config["FRONTEND_URL"]}</p>
-                '''
-        cc = []
-        toaddress= [args['email']]
-        if len(toaddress):
-            _SendEmail(body=body,subject=subject,cc=cc,to_address=toaddress)
-        else:
-            LOG.error("CREATE USER : MAIL NOT SEND DUE TO NO TO ADDRESS GIVEN")
-            UnprocessableEntity("Cannot Send Mail")
-        # Mail to be sent here with the password we created
-        
-        db.session.add(usermodel)
-        db.session.commit()
-        LOG.info("The Password for user %s is : %s", args['newuser'], Password)
+        try:
+            user = User.query.filter((User.Email==args["email"]) | (User.UserId == args['newuserid'])).first()
+            if user :
+                return {"result": "failure", "error": "user exists with this email or employee id"}, 400
+            password = randomStringwithDigitsAndSymbols()
+            pass_encrypt = Encryption().encrypt(password)
+            
+            usermodel = User(UserName=args['newuser'],
+                            UserId = args['newuserid'],
+                            Password=pass_encrypt,
+                            Email=args['email'],
+                            Status= status.STATUS_ACTIVE,
+                            Role=args['role'],
+                            Manager = args['manager'],
+                            SecondaryManager = args['secondarymanager'],
+                            SecondaryManagerEmail = args['secondarymanageremail'],
+                            ManagerEmail = args['manageremail'],
+                            TemporaryPassword	= True
+                            )
+            
+            # Notify the user the creation of his Account with Temporary Password
+            subject = f"Welcome {args['newuser']}"
+            body = f'''<H1>Hi {args['newuser']} Welcome To Ts portal</H1>
+                        <p>Your Account has been Created, with the following credentials</p>
+                        <p>User Name : {args['email']}</p>
+                        <p>Password : {password}</p>
+                        <p>Please Click on this <a href={APP.config["FRONTEND_URL"]}>link</a> or  copy paste this {APP.config["FRONTEND_URL"]}</p>
+                    '''
+            cc = []
+            toaddress= [args['email']]
+            if len(toaddress):
+                _SendEmail(body=body,subject=subject,cc=cc,to_address=toaddress)
+            else:
+                LOG.error("CREATE USER : MAIL NOT SEND DUE TO NO TO ADDRESS GIVEN")
+                UnprocessableEntity("Cannot Send Mail")
+            # Mail to be sent here with the password we created
+            
+            db.session.add(usermodel)
+            db.session.commit()
+            LOG.info("The Password for user %s is : %s", args['newuser'], password)
 
-        return {"result": "success", "error": None}
+            return {"result": "success", "error": None}
+        except Exception as e:
+            print(e)
+            return {"result":e}

@@ -17,7 +17,8 @@ from ... import APP, LOG
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', type=str,
                     location='headers', required=True)
-parser.add_argument('date', type=inputs.date_from_iso8601, location='json', required=False)
+# parser.add_argument('date', type=inputs.date_from_iso8601, location='json', required=False)
+parser.add_argument('date', type=str, location='json', required=False)
 parser.add_argument('customer', type=str, location='json', required=True)
 parser.add_argument('project', type=str, location='json', required=True)
 parser.add_argument('task', type=str, location='json', required=True)
@@ -36,7 +37,6 @@ class Create_entry(Resource):
     @ns.expect(parser, validate=True)
     @ns.marshal_with(response_model)
     def post(self):
-        
         args = parser.parse_args(strict=True)
         Date = args['date']
         Customer = args['customer']
@@ -48,11 +48,6 @@ class Create_entry(Resource):
         
         entrydatetime = datetime.now()
 
-        # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
-        # Email =  y['email']
-        # UserID = y['userid']
-        
-        # token_verify_or_raise(args['Authorization'], Email, UserID )
         try:
             y = token_decode(args['Authorization'])
             if isinstance(y,tuple):

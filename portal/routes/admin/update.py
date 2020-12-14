@@ -40,13 +40,10 @@ class UpdateUser(Resource):
         Email =  y['email']
         UserId = y['userid']
         token_verify_or_raise(args['Authorization'])
-        # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
         
-        # Email =  y['email']
-        # UserId = y['userid']
-            
-        # token_verify_or_raise(args['Authorization'], Email, UserId )
         try:
+            if UserId == args['userid']:
+                return {'result':'failure','error':"Admin can't update his own details"}, 400
             user = User.query.filter_by(UserId=args['userid']).first()
             if user is None:
                 UnprocessableEntity("user is not Available")

@@ -6,7 +6,7 @@ from flask_restx import Resource, reqparse, cors, fields
 from werkzeug.exceptions import NotFound, BadRequest, Unauthorized, UnprocessableEntity, InternalServerError
 from ....helpers import randomStringwithDigitsAndSymbols, RESPONSE_OK,_SendEmail
 from ....encryption import Encryption
-from ....models import db
+from ....models import db,status
 from ....models.users import User
 # from ....services.mail import send_email
 from .. import ns
@@ -52,8 +52,11 @@ class PasswordReset(Resource):
     @ns.expect(parser, validate=True)
     def post(self):
         args = parser.parse_args(strict=False)
-
+        if args['Email'][-11:] != "manomay.biz":
+            return {"result": "failure", "error": "This mail can't request for reset password"}, 400
         user = User.query.filter_by(Email = args['Email']).first()
         if user is None:
-            raise UnprocessableEntity('User not found')
+            return {"result": "failure", "error": "User doesn't exists with this email"}, 400
+        if user.Status == status.STATUS_INACTIVE:
+            return {"result": "failure", "error": "User is deactivated"}, 400
         return _change_password(user)
