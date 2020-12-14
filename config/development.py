@@ -16,7 +16,7 @@ SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://DESKTOP-RMVRFH6/Timesheetprod?driver=S
 # SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://Manomay1:Manomay@9@DESKTOP-IRHNO1M\SQLEXPRESS/TimeSheet?driver=SQL Server?Trusted_Connection=No'
 DEFAULT_PASSWORD= 'tZ4Olwg7n7od6J9lqmtTpw=='
 
-FRONTEND_URL= 'http://192.168.2.230:4200'
+FRONTEND_URL= 'http://192.168.2.162:4200'
 
 MAILSERVER_DOMAIN = 'smtp.gmail.com'
 MAILSERVER_PORT = 465
