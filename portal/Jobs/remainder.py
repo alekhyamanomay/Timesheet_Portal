@@ -9,9 +9,7 @@ from portal.models import db
 from portal.helpers import _SendEmail
 from datetime import datetime, timedelta
 
-# yesterday
-yesterday = (datetime.now() + timedelta(days=-1)).date()
-print(yesterday)
+# Logging as in writing to files
 logs_location = os.path.join(init.app.config["LOG_DIR"],"remainder.log")
 if os.path.isfile(logs_location):
     print(logs_location,"Size:",os.stat(logs_location).st_size)
@@ -19,9 +17,29 @@ if os.path.isfile(logs_location):
         print('removing repitition log')
         os.remove(logs_location)
 f = open(logs_location, "a")
+weekday = datetime.now().weekday()
+f.write(f'___________________________________________________________________\n')
+f.write(f'logging Started for - day {datetime.now().strftime("%d-%m-%Y")}\n')
+
+# if today is Saturday or Sunday don't run this Job
+if weekday == 5 or weekday == 6:
+    f.write(f'Today is either Saturday or Sunday, {datetime.now().strftime("%d-%m-%Y")} not need to run today \n')
+    f.write(f'___________________________________________________________________\n')
+    f.write(f'exiting...\n')
+    f.close()
+    exit()
+
+# yesterday only on tuesday,wednesday,thursday and friday
+yesterday = (datetime.now() + timedelta(days=-1)).date()
+print(yesterday)
+# if today is monday go back three days i.e friday
+if weekday == 0:
+    yesterday = (datetime.now() + timedelta(days=-3)).date()
+    print(yesterday)
 # if yesterday this function was ran no need to run it again
 if Remainders.query.filter_by(RemainderDate = yesterday).first():
     f.write(f'Remainder Ran {yesterday.strftime("%d-%m-%Y")} not need to run again \n')
+    f.write(f'___________________________________________________________________\n')
     f.write(f'exiting...\n')
     f.close()
     exit()
@@ -42,13 +60,12 @@ for i in users:
 for i in timesheetdata:
     if not(i[1] < 2):
         userids.remove(i[0])
-print(userids)
-print(timesheetdata)
+# print(userids)
+# print(timesheetdata)
 tracker = []
-subject = f'Timesheet entry for {yesterday.strftime("%d-%m-%Y")}--Testing'
+subject = f'Timesheet entry for {yesterday.strftime("%d-%m-%Y")}'
 for i in userids:
-    
-    print(f"Triggering Remainder to {emails[i][1]}")
+    # print(f"Triggering Remainder to {emails[i][1]}")
     body = f'''<html>
             <body>
             <h3>Hi {emails[i][0]},</h3>
@@ -60,10 +77,8 @@ for i in userids:
             </body>
             </html>'''
     f.write(f"Sending remainder to: {emails[i][1]}\n")
-    # emails[i.UserId] = [i.UserName, i.Email, i.ManagerEmail, i.SecondaryManagerEmail]
-    # result = _SendEmail([emails[i][1]],subject,body,[emails[i][2],emails[i][3]])
-    result = "mail sent"
-    print(result)
+    result = _SendEmail([emails[i][1]],subject,body,[emails[i][2],emails[i][3]])
+    # result = "mail sent"
     if result == "mail sent":
         print("updating remainder table")
         f.write(f"Remainder sent successfully to {emails[i][1]}\n")
@@ -77,5 +92,6 @@ for i in userids:
     else:
         print("some issue")
         f.write(f"some error remainding to {emails[i][1]}, {result} \n")
-        
+f.write(f'___________________________________________________________________\n')
+f.write(f'logging Ending for - day {datetime.now().strftime("%d-%m-%Y")}\n')        
 f.close()
