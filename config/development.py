@@ -11,7 +11,7 @@ SECRET_KEY = 'BT-=f~i1IlIHF(#'
 JWT_SECRET = 'R]B+=46,e=gKtI/'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://DESKTOP-RMVRFH6/Timesheetprod?driver=SQL Server?Trusted_Connection=Yes'
+SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://DESKTOP-RMVRFH6/TimeSheetProd_V2?driver=SQL Server?Trusted_Connection=Yes'
 # SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://DESKTOP-IRHNO1M\SQLEXPRESS/TimeSheet?driver=SQL Server?Trusted_Connection=Yes'
 # SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://Manomay1:Manomay@9@DESKTOP-IRHNO1M\SQLEXPRESS/TimeSheet?driver=SQL Server?Trusted_Connection=No'
 DEFAULT_PASSWORD= 'tZ4Olwg7n7od6J9lqmtTpw=='

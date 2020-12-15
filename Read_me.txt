@@ -13,3 +13,5 @@ _____________run jobs(not available)_____________________
 
 # celery worker --app=tasks.worker.app --pool=eventlet --loglevel=info --pid=
 # celery beat --app=tasks.worker.app --loglevel=info --pid=
+
+#C:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\Backup\
