@@ -1,27 +1,38 @@
-import init
-import os
-
-from portal.models.users import User
-from portal.models.timesheetentry import TimesheetEntry
-from portal.models.remainders import Remainders
-from sqlalchemy import func
-from portal.models import db
-from portal.helpers import _SendEmail
-from datetime import datetime, timedelta
-
-# Logging as in writing to files
-logs_location = os.path.join(init.app.config["LOG_DIR"],"remainder.log")
-if os.path.isfile(logs_location):
-    print(logs_location,"Size:",os.stat(logs_location).st_size)
-    if os.stat(logs_location).st_size >= 1048576:
-        print('removing repitition log')
-        os.remove(logs_location)
-f = open(logs_location, "a")
 try:
+    import os
+    import sys
+    from datetime import datetime, timedelta
+    basepath = os.path.abspath(os.path.join(os.getcwd(),"..\.."))
+    print(basepath)
+    sys.path.insert(1,basepath)
+    print(sys.path)
+    # create instance of flask app
+    # help('modules')
+    from flask import Flask
+    app = Flask(__name__)
+    configfile = os.path.abspath(os.path.join(basepath,'config','development.py'))
+    app.config.from_pyfile(configfile)
+    # create instance of sql alchemy
+    import portal.models as models
+    models.init_app(app)
+    app.app_context().push()
+    from sqlalchemy import func
+    from portal.helpers import _SendEmail
+    from portal.models import db
+    from portal.models.remainders import Remainders
+    from portal.models.timesheetentry import TimesheetEntry
+    from portal.models.users import User
+    # Logging as in writing to files
+    logs_location = os.path.join(app.config["LOG_DIR"],"remainder.log")
+    if os.path.isfile(logs_location):
+        print(logs_location,"Size:",os.stat(logs_location).st_size)
+        if os.stat(logs_location).st_size >= 1048576:
+            print('removing repitition log')
+            os.remove(logs_location)
+    f = open(logs_location, "a")
     weekday = datetime.now().weekday()
     f.write(f'___________________________________________________________________\n')
-    f.write(f'logging Started for - day {datetime.now().strftime("%d-%m-%Y")}\n')
-
+    f.write(f'logging Started for {weekday} - day {datetime.now().strftime("%d-%m-%Y")}\n')
     # if today is Saturday or Sunday don't run this Job
     if weekday == 5 or weekday == 6:
         f.write(f'Today is either Saturday or Sunday, {datetime.now().strftime("%d-%m-%Y")} not need to run today \n')
@@ -29,7 +40,6 @@ try:
         f.write(f'exiting...\n')
         f.close()
         exit()
-
     # yesterday only on tuesday,wednesday,thursday and friday
     yesterday = (datetime.now() + timedelta(days=-1)).date()
     print(yesterday)
@@ -78,8 +88,8 @@ try:
                 </body>
                 </html>'''
         f.write(f"Sending remainder to: {emails[i][1]}\n")
-        # result = _SendEmail([emails[i][1]],subject,body,[emails[i][2],emails[i][3]])
-        result = "mail sent"
+        result = _SendEmail([emails[i][1]],subject,body,[emails[i][2],emails[i][3]])
+        # result = "mail sent"
         if result == "mail sent":
             print("updating remainder table")
             f.write(f"Remainder sent successfully to {emails[i][1]}\n")
@@ -97,7 +107,7 @@ try:
     f.write(f'logging Ending for - day {datetime.now().strftime("%d-%m-%Y")}\n')        
     f.close()
 except Exception as e:
-    f.write(f'_________________error Occured__________________________\n')
+    print(e)
     f.write(f'{str(e)}\n')
     f.write(f'exiting...\n')
     f.close()
