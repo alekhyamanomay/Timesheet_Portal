@@ -1,44 +1,25 @@
+import os
+import init
+from init import LOG
+from datetime import datetime, timedelta
+# create instance of sql alchemy
+from sqlalchemy import func
+from portal.helpers import _SendEmail
+from portal.models import db
+from portal.models.remainders import Remainders
+from portal.models.timesheetentry import TimesheetEntry
+from portal.models.users import User
 try:
-    import os
-    import sys
-    from datetime import datetime, timedelta
-    basepath = os.path.abspath(os.path.join(os.getcwd(),"..\.."))
-    print(basepath)
-    sys.path.insert(1,basepath)
-    print(sys.path)
-    # create instance of flask app
-    # help('modules')
-    from flask import Flask
-    app = Flask(__name__)
-    configfile = os.path.abspath(os.path.join(basepath,'config','development.py'))
-    app.config.from_pyfile(configfile)
-    # create instance of sql alchemy
-    import portal.models as models
-    models.init_app(app)
-    app.app_context().push()
-    from sqlalchemy import func
-    from portal.helpers import _SendEmail
-    from portal.models import db
-    from portal.models.remainders import Remainders
-    from portal.models.timesheetentry import TimesheetEntry
-    from portal.models.users import User
     # Logging as in writing to files
-    logs_location = os.path.join(app.config["LOG_DIR"],"remainder.log")
-    if os.path.isfile(logs_location):
-        print(logs_location,"Size:",os.stat(logs_location).st_size)
-        if os.stat(logs_location).st_size >= 1048576:
-            print('removing repitition log')
-            os.remove(logs_location)
-    f = open(logs_location, "a")
     weekday = datetime.now().weekday()
-    f.write(f'___________________________________________________________________\n')
-    f.write(f'logging Started for {weekday} - day {datetime.now().strftime("%d-%m-%Y")}\n')
+    LOG.info('___________________________________________________________________')
+    LOG.info(f'logging Started for {weekday} - day {datetime.now().strftime("%d-%m-%Y")}')
     # if today is Saturday or Sunday don't run this Job
     if weekday == 5 or weekday == 6:
-        f.write(f'Today is either Saturday or Sunday, {datetime.now().strftime("%d-%m-%Y")} not need to run today \n')
-        f.write(f'___________________________________________________________________\n')
-        f.write(f'exiting...\n')
-        f.close()
+        LOG.info(f'Today is either Saturday or Sunday, {datetime.now().strftime("%d-%m-%Y")} not need to run today ')
+        LOG.info(f'___________________________________________________________________')
+        LOG.info(f'exiting...')
+        
         exit()
     # yesterday only on tuesday,wednesday,thursday and friday
     yesterday = (datetime.now() + timedelta(days=-1)).date()
@@ -49,10 +30,9 @@ try:
         print(yesterday)
     # if yesterday this function was ran no need to run it again
     if Remainders.query.filter_by(RemainderDate = yesterday).first():
-        f.write(f'Remainder Ran {yesterday.strftime("%d-%m-%Y")} not need to run again \n')
-        f.write(f'___________________________________________________________________\n')
-        f.write(f'exiting...\n')
-        f.close()
+        LOG.info(f'Remainder Ran {yesterday.strftime("%d-%m-%Y")} not need to run again ')
+        LOG.info(f'___________________________________________________________________')
+        LOG.info(f'exiting...')
         exit()
     # get all users
     users = User.query.all()
@@ -87,12 +67,12 @@ try:
                 <p>Manomay</p>
                 </body>
                 </html>'''
-        f.write(f"Sending remainder to: {emails[i][1]}\n")
-        result = _SendEmail([emails[i][1]],subject,body,[emails[i][2],emails[i][3]])
-        # result = "mail sent"
+        LOG.info(f"Sending remainder to: {emails[i][1]}")
+        # result = _SendEmail([emails[i][1]],subject,body,[emails[i][2],emails[i][3]])
+        result = "mail sent"
         if result == "mail sent":
             print("updating remainder table")
-            f.write(f"Remainder sent successfully to {emails[i][1]}\n")
+            LOG.info(f"Remainder sent successfully to {emails[i][1]}")
             newentry = Remainders(
                                     UserId =i,
                                     UserName =emails[i][0],  
@@ -102,13 +82,13 @@ try:
             # db.session.commit()
         else:
             print("some issue")
-            f.write(f"some error remainding to {emails[i][1]}, {result} \n")
-    f.write(f'___________________________________________________________________\n')
-    f.write(f'logging Ending for - day {datetime.now().strftime("%d-%m-%Y")}\n')        
-    f.close()
+            LOG.info(f"some error remainding to {emails[i][1]}, {result} ")
+    LOG.info(f'___________________________________________________________________')
+    LOG.info(f'logging Ending for - day {datetime.now().strftime("%d-%m-%Y")}')        
+    
 except Exception as e:
     print(e)
-    f.write(f'{str(e)}\n')
-    f.write(f'exiting...\n')
-    f.close()
+    LOG.info(f'{str(e)}')
+    LOG.info(f'exiting...')
+    
 
