@@ -68,7 +68,7 @@ def init_app():
         elif config_file_path.endswith('.py'):
             APP.config.from_pyfile(config_file_path)
 
-    # init_logger(APP)
+    init_logger(APP)
     try:
         from . import routes, models, api
 

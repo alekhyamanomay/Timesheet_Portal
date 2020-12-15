@@ -54,7 +54,6 @@ class Create_entry(Resource):
                 return {'error':"Unathorized token"}, 401
 
             Email =  y['email']
-            UserId = y['userid']
             token_verify_or_raise(args['Authorization'])
             userinfo = User.query.filter_by(Email= Email).first()
             if userinfo is None:

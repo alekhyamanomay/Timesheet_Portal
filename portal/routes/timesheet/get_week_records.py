@@ -49,15 +49,13 @@ class Get_week_records(Resource):
             y = token_decode(args['Authorization'])
             if isinstance(y,tuple):
                 return {'error':"Unathorized token"}, 401
-
-            # Email =  y['email']
+                
             UserId = y['userid']
             token_verify_or_raise(args['Authorization'])
             
             filter_after = datetime.today() - timedelta(days = 7)
             Week_records = TimesheetEntry.query.filter_by(UserId= UserId).order_by(TimesheetEntry.WeekDate.desc()).filter(TimesheetEntry.WeekDate >= filter_after).all()
             
-            # print(Week_records,"*********************")
             if Week_records:
                 if len(Week_records) == 1:
                     records.append({

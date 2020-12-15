@@ -33,18 +33,13 @@ class Delete_entry(Resource):
         args = parser.parse_args(strict=True)
         
         try:
-            # y = jwt.decode(args['Authorization'], key=APP.config['JWT_SECRET'], algorithms=['HS256'])
-            # Email =  y['email']
-            # UserID = y['userid']
-
-            # token_verify_or_raise(args['Authorization'], Email, UserID )
+    
             y = token_decode(args['Authorization'])
         
             if isinstance(y,tuple):
                 return {'error':"Unathorized token"}, 401
 
             Email =  y['email']
-            UserId = y['userid']
             token_verify_or_raise(args['Authorization'])
 
             userinfo = User.query.filter_by(Email= Email).first()

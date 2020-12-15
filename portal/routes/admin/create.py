@@ -43,12 +43,11 @@ class CreateUser(Resource):
         if isinstance(y,tuple):
             return {'message':"Unathorized token"}, 401
 
-        # Email =  y['email']
-        # UserId = y['userid']
         token_verify_or_raise(args['Authorization'])
         try:
             user = User.query.filter((User.Email==args["email"]) | (User.UserId == args['newuserid'])).first()
             if user :
+                LOG.debug("user exists with this email or employee id %s", args["email"])
                 return {"result": "failure", "error": "user exists with this email or employee id"}, 400
             password = randomStringwithDigitsAndSymbols()
             pass_encrypt = Encryption().encrypt(password)
@@ -66,6 +65,10 @@ class CreateUser(Resource):
                             TemporaryPassword	= True
                             )
             
+            db.session.add(usermodel)
+            db.session.commit()
+            LOG.info("The Password for user %s is : %s", args['newuser'], password)
+            
             # Notify the user the creation of his Account with Temporary Password
             subject = f"Welcome {args['newuser']}"
             body = f'''<p>Hi {args['newuser']} Welcome To Ts portal</p>
@@ -81,13 +84,9 @@ class CreateUser(Resource):
             else:
                 LOG.error("CREATE USER : MAIL NOT SEND DUE TO NO TO ADDRESS GIVEN")
                 UnprocessableEntity("Cannot Send Mail")
-            # Mail to be sent here with the password we created
-            
-            db.session.add(usermodel)
-            db.session.commit()
-            LOG.info("The Password for user %s is : %s", args['newuser'], password)
+            # Mail to be sent here with the password we create
 
             return {"result": "success", "error": None}
         except Exception as e:
-            print(e)
+            LOG.exception(e)
             return {"result":e}

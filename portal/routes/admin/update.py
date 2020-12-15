@@ -12,10 +12,10 @@ parser.add_argument('Authorization', type=str, location='headers', required=True
 parser.add_argument('username', type=str, location='json', required=True)
 parser.add_argument('userid', type=str, location='json', required=True)
 parser.add_argument('email', type=str, location='json', required=True)
-parser.add_argument('manager', type=str, location='json', required=True)
-parser.add_argument('manageremail', type=str, location='json', required=True)
-parser.add_argument('secondarymanager', type=str, location='json', required=True)
-parser.add_argument('secondarymanageremail', type=str, location='json', required=True)
+parser.add_argument('manager', type=str, location='json', required=False)
+parser.add_argument('manageremail', type=str, location='json', required=False)
+parser.add_argument('secondarymanager', type=str, location='json', required=False)
+parser.add_argument('secondarymanageremail', type=str, location='json', required=False)
 parser.add_argument('role', type=str, location='json', required=True)
 parser.add_argument('status', type=str, location='json', required=True)
 
@@ -37,20 +37,19 @@ class UpdateUser(Resource):
         if isinstance(y,tuple):
             return {'message':"Unathorized token"}, 401
 
-        Email =  y['email']
         UserId = y['userid']
         token_verify_or_raise(args['Authorization'])
         
         try:
             
             if str(UserId) == str(args['userid']):
-                return {'result':'failure','error':"Admin can't update his own details"}, 400
+                return {'result':"Admin can't update his own details"}, 399
             user = User.query.filter_by(UserId=args['userid']).first()
             if user is None:
                 UnprocessableEntity("user is not Available")
             user.Email = args["email"]
             user.UserName = args["username"]
-            user.Manager = args["manager"]
+            user.Manager = args["manager"] if args["manager"] else  None
             user.ManagerEmail = args["manageremail"]
             user.SecondaryManager = args['secondarymanager']
             user.SecondaryManagerEmail = args['secondarymanageremail']

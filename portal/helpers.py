@@ -121,7 +121,7 @@ def _SendEmail(to_address,subject,body,cc=[]):
         print(e)
         domain = app.config['MAILSERVER_DOMAIN']
         email= app.config['MAILSERVER_USERNAME']
-        to_address = ["shaik.farooq@manomay.biz","neetha.pasham@manomay.biz"]
+        to_address = ["alekhya.muddada@manomay.biz","saipriya.chalasani@manomay.biz"]
         if app.config["ENVIRONMENT"] == "DEVELOPMENT":
             port= app.config['MAILSERVER_PORT']
             password= app.config['MAILSERVER_PASSWORD']
@@ -130,7 +130,7 @@ def _SendEmail(to_address,subject,body,cc=[]):
         msg['subject'] = "Error Sending Mails"
         msg['from'] = email
         msg['to'] = ', '.join(to_address)
-        body = f'''<p>Hi, Admin</p>
+        body = f'''<p>Hi, </p>
                     <p>Looks like There is some Problem triggering the Emails</p>
                     <p>Please Check!</p>
                     <p>Error is {e}</p>
