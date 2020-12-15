@@ -9,7 +9,7 @@ def init_logger(app):
     log_file = os.path.join(app.config['LOG_DIR'], 'remainder.log')
 
     log_level =  logging.DEBUG
-    log_format = Formatter(f'%(process)d-%(levelname)s-%(message)s')
+    log_format = Formatter(f'%(asctime)s-%(levelname)s-%(message)s')
 
     TWO_MEGABYTE = 2_000_000
     file_handler = RotatingFileHandler(filename=log_file, maxBytes=TWO_MEGABYTE, backupCount=3)
