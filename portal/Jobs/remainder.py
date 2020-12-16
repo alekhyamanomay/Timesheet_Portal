@@ -55,7 +55,10 @@ try:
     print(timesheetdata)
     tracker = []
     subject = f'Timesheet entry for {yesterday.strftime("%d-%m-%Y")}'
+    LOG.info("remainder triggered for %s",str(len(userids)))
     for i in userids:
+        if emails[i][3] is None:
+            emails[i][3] = ""
         print(f"Triggering Remainder to {emails[i][1]}")
         body = f'''<html>
                 <body>
@@ -68,7 +71,8 @@ try:
                 </body>
                 </html>'''
         LOG.info(f"Sending remainder to: {emails[i][1]}")
-        # result = _SendEmail([emails[i][1]],subject,body,[emails[i][2],emails[i][3]])
+        result = _SendEmail([emails[i][1]],subject,body,[emails[i][2],emails[i][3]])
+        # LOG.info("name:%s,subject:%s,body:%s,manager:%s,secondary manager:%s",emails[i][1],subject,body,emails[i][2],emails[i][3])
         result = "mail sent"
         if result == "mail sent":
             print("updating remainder table")
@@ -79,16 +83,15 @@ try:
                                     # TriggeredDate=datetime.now().date()+ timedelta(days=-1))
                                     RemainderDate=yesterday)
             db.session.add(newentry)
-            # db.session.commit()
+            db.session.commit()
         else:
             print("some issue")
-            LOG.info(f"some error remainding to {emails[i][1]}, {result} ")
+            LOG.info(f"some error remainding to {emails[i][1]}, {result}")
     LOG.info(f'___________________________________________________________________')
     LOG.info(f'logging Ending for - day {datetime.now().strftime("%d-%m-%Y")}')        
     
 except Exception as e:
     print(e)
-    LOG.info(f'{str(e)}')
-    LOG.info(f'exiting...')
+    LOG.exception('error occured')
     
 
