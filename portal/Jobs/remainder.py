@@ -71,12 +71,13 @@ try:
                 </body>
                 </html>'''
         LOG.info(f"Sending remainder to: {emails[i][1]}")
+        result = None
         try:
             result = _SendEmail([emails[i][1]],subject,body,[emails[i][2],emails[i][3]])
         except:
             LOG.exception("Could not Send Email")
         # LOG.info("name:%s,subject:%s,body:%s,manager:%s,secondary manager:%s",emails[i][1],subject,body,emails[i][2],emails[i][3])
-        result = "mail sent"
+        # result = "mail sent"
         if result == "mail sent":
             print("updating remainder table")
             LOG.info(f"Remainder sent successfully to {emails[i][1]}")
